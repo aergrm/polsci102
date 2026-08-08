@@ -1,0 +1,6 @@
+{
+  "name": "POL SCI 102: Intro to IR",
+  "description": "Course website for Political Science 102: Introduction to International Relations at UWM.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
