@@ -1,6 +1,7 @@
 import { motion } from 'motion/react';
-import { Mail, Globe, BookOpen, GraduationCap, HelpCircle, Calendar, CheckCircle2, FileText } from 'lucide-react';
+import { Mail, Globe, BookOpen, GraduationCap, HelpCircle, Calendar, CheckCircle2 } from 'lucide-react';
 import { courseInfo } from '../data';
+import { Hero3DCanvas } from './Hero3DCanvas';
 
 export function Home() {
   return (
@@ -10,21 +11,17 @@ export function Home() {
       transition={{ duration: 0.4 }}
       className="space-y-10"
     >
-      {/* Hero Banner */}
+      {/* Hero Banner with Interactive 3D Canvas */}
       <section className="bg-white rounded-2xl shadow-sm border border-zinc-200 overflow-hidden">
-        <div className="bg-gradient-to-r from-indigo-900 via-indigo-800 to-slate-900 text-white p-8 md:p-12 relative">
-          <div className="inline-block bg-indigo-500/30 text-indigo-200 text-xs font-semibold px-3 py-1 rounded-full mb-3 backdrop-blur-sm border border-indigo-400/20">
-            {courseInfo.institution} • {courseInfo.department}
-          </div>
-          <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight mb-3">
-            {courseInfo.courseCode}: {courseInfo.title}
-          </h1>
-          <p className="text-indigo-200 text-lg max-w-2xl font-light">
-            Spring 2027 • {courseInfo.format}
-          </p>
-        </div>
+        <Hero3DCanvas
+          institution={courseInfo.instructor.institution}
+          department={courseInfo.instructor.department}
+          courseCode={courseInfo.courseCode}
+          title={courseInfo.title}
+          format={courseInfo.format}
+        />
 
-        <div className="p-6 md:p-10 space-y-6">
+        <div className="p-6 md:p-8 space-y-6">
           <p className="text-zinc-700 leading-relaxed text-base md:text-lg">
             {courseInfo.description}
           </p>

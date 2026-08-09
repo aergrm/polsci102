@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Globe, Shield, FileText, CheckCircle2, AlertTriangle, XCircle, Info, RefreshCw } from 'lucide-react';
+import { UNSC3DChamberCanvas } from './UNSC3DChamberCanvas';
 
 interface Clause {
   id: string;
@@ -156,6 +157,9 @@ export function UNSCNegotiator() {
           </div>
         </div>
       </div>
+
+      {/* 3D Chamber Visualizer */}
+      <UNSC3DChamberCanvas p5Stances={p5Stances} isVetoed={vetoCount > 0} />
 
       {/* Main Grid */}
       <div className="grid lg:grid-cols-12 gap-8">

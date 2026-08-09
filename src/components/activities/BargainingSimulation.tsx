@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { ShieldAlert, Info, Scale, CheckCircle, AlertTriangle, RefreshCw, Zap } from 'lucide-react';
+import { Fearon3DBargainingCanvas } from './Fearon3DBargainingCanvas';
 
 export function BargainingSimulation() {
   const [probAlphaWin, setProbAlphaWin] = useState<number>(60); // p = 0.60
@@ -85,7 +86,15 @@ export function BargainingSimulation() {
       </div>
 
       {!privateInfoMode ? (
-        <div className="space-y-8">
+        <div className="space-y-6">
+          {/* 3D Bargaining Range Model */}
+          <Fearon3DBargainingCanvas
+            alphaWarPayoff={alphaWarPayoff}
+            maxAlphaProposalBetaAccepts={maxAlphaProposalBetaAccepts}
+            proposalAlpha={proposalAlpha}
+            isAccepted={isAccepted}
+          />
+
           {/* Sliders Grid */}
           <div className="grid md:grid-cols-3 gap-6 bg-zinc-50 p-6 rounded-xl border border-zinc-200">
             <div>
