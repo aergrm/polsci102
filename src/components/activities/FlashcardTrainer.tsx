@@ -25,6 +25,34 @@ const flashcards: Flashcard[] = [
     citationOrExample: 'Jervis (1978) - "Cooperation under the Security Dilemma"'
   },
   {
+    id: 'f11',
+    category: 'Security & Conflict',
+    term: 'Offense-Defense Balance',
+    definition: 'Whether it is easier to destroy the other state\'s territory and forces than it is to defend one\'s own. When offense has the advantage, war is far more likely.',
+    citationOrExample: 'Stephen Van Evera (1998) / Robert Jervis (1978)'
+  },
+  {
+    id: 'f12',
+    category: 'Essential Knowledge',
+    term: 'Hegemonic Stability Theory',
+    definition: 'The proposition that the international system is most stable when a single dominant superpower (hegemon) enforces rules, open trade, and maritime security.',
+    citationOrExample: 'Charles Kindleberger (1973); Robert Gilpin (1987)'
+  },
+  {
+    id: 'f13',
+    category: 'Essential Knowledge',
+    term: 'Constructivism',
+    definition: 'IR theory emphasizing that key aspects of international relations are socially constructed through shared ideas, norms, identities, and discourse rather than inherent material structures.',
+    citationOrExample: 'Alexander Wendt (1992) - "Anarchy is What States Make of It"'
+  },
+  {
+    id: 'f14',
+    category: 'Essential Knowledge',
+    term: 'Bipolarity vs. Multipolarity',
+    definition: 'Bipolarity features two predominant superpowers (e.g. Cold War US-USSR), often creating simpler balancing. Multipolarity features three or more major powers, creating shifting alliance complexities.',
+    citationOrExample: 'Kenneth Waltz (1979) Theory of International Politics'
+  },
+  {
     id: 'f3',
     category: 'Security & Conflict',
     term: 'Deterrence vs. Compellence',

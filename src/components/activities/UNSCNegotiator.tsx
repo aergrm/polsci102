@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { Globe, Shield, FileText, CheckCircle2, AlertTriangle, XCircle, Info, RefreshCw } from 'lucide-react';
+import { Globe, Shield, FileText, CheckCircle2, AlertTriangle, XCircle, Info, Volume2, VolumeX } from 'lucide-react';
 import { UNSC3DChamberCanvas } from './UNSC3DChamberCanvas';
+import { soundManager } from '../../lib/soundEffects';
 
 interface Clause {
   id: string;
@@ -53,8 +54,15 @@ export function UNSCNegotiator() {
     'peacekeeping-obs',
     'humanitarian-corridor'
   ]);
+  const [isMuted, setIsMuted] = useState<boolean>(soundManager.getMuted());
+
+  const handleToggleMute = () => {
+    const nextMuted = soundManager.toggleMute();
+    setIsMuted(nextMuted);
+  };
 
   const toggleClause = (id: string) => {
+    soundManager.playClick();
     setSelectedClauseIds(prev =>
       prev.includes(id) ? prev.filter(c => c !== id) : [...prev, id]
     );
@@ -127,32 +135,42 @@ export function UNSCNegotiator() {
           </p>
         </div>
 
-        {/* Resolution Outcome Status Badge */}
-        <div className={`px-5 py-3 rounded-2xl border flex items-center gap-3 ${
-          resolutionAdopted
-            ? 'bg-emerald-50 border-emerald-300 text-emerald-950'
-            : vetoCount > 0
-            ? 'bg-rose-50 border-rose-300 text-rose-950'
-            : 'bg-amber-50 border-amber-300 text-amber-950'
-        }`}>
-          {resolutionAdopted ? (
-            <CheckCircle2 className="w-6 h-6 text-emerald-600 shrink-0" />
-          ) : vetoCount > 0 ? (
-            <XCircle className="w-6 h-6 text-rose-600 shrink-0" />
-          ) : (
-            <AlertTriangle className="w-6 h-6 text-amber-600 shrink-0" />
-          )}
+        {/* Action Controls & Outcome Status Badge */}
+        <div className="flex flex-wrap items-center gap-3">
+          <button
+            onClick={handleToggleMute}
+            className="p-2.5 rounded-xl border border-zinc-200 bg-zinc-50 hover:bg-zinc-100 text-zinc-700 text-xs font-semibold flex items-center gap-1.5 transition-colors"
+            title={isMuted ? 'Unmute Sound Effects' : 'Mute Sound Effects'}
+          >
+            {isMuted ? <VolumeX className="w-4 h-4 text-rose-500" /> : <Volume2 className="w-4 h-4 text-indigo-600" />}
+          </button>
 
-          <div>
-            <div className="text-xs font-bold uppercase tracking-wide">
-              {resolutionAdopted ? 'Resolution Passed & Adopted' : vetoCount > 0 ? 'Resolution Vetoed' : 'Insufficient Votes'}
-            </div>
-            <div className="text-[11px] font-medium opacity-90">
-              {resolutionAdopted
-                ? `Adopted with ${totalYes}/15 votes and 0 P5 vetoes.`
-                : vetoCount > 0
-                ? `Blocked by ${vetoCount} P5 Veto${vetoCount > 1 ? 'es' : ''}.`
-                : `Needs 9 votes minimum (currently ${totalYes}/15).`}
+          <div className={`px-4 py-2.5 rounded-xl border flex items-center gap-3 ${
+            resolutionAdopted
+              ? 'bg-emerald-50 border-emerald-300 text-emerald-950'
+              : vetoCount > 0
+              ? 'bg-rose-50 border-rose-300 text-rose-950'
+              : 'bg-amber-50 border-amber-300 text-amber-950'
+          }`}>
+            {resolutionAdopted ? (
+              <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
+            ) : vetoCount > 0 ? (
+              <XCircle className="w-5 h-5 text-rose-600 shrink-0" />
+            ) : (
+              <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0" />
+            )}
+
+            <div>
+              <div className="text-xs font-bold uppercase tracking-wide">
+                {resolutionAdopted ? 'Resolution Passed' : vetoCount > 0 ? 'Vetoed' : 'Needs Votes'}
+              </div>
+              <div className="text-[10px] font-medium opacity-90">
+                {resolutionAdopted
+                  ? `${totalYes}/15 Yes • 0 Vetoes`
+                  : vetoCount > 0
+                  ? `${vetoCount} P5 Veto${vetoCount > 1 ? 'es' : ''}`
+                  : `${totalYes}/15 (Needs 9)`}
+              </div>
             </div>
           </div>
         </div>

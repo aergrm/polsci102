@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { ShieldAlert, Info, Scale, CheckCircle, AlertTriangle, RefreshCw, Zap } from 'lucide-react';
+import { ShieldAlert, Info, Scale, CheckCircle, AlertTriangle, RefreshCw, Zap, Volume2, VolumeX } from 'lucide-react';
 import { Fearon3DBargainingCanvas } from './Fearon3DBargainingCanvas';
+import { soundManager } from '../../lib/soundEffects';
 
 export function BargainingSimulation() {
   const [probAlphaWin, setProbAlphaWin] = useState<number>(60); // p = 0.60
@@ -49,17 +50,36 @@ export function BargainingSimulation() {
     }
   };
 
+  const [isMuted, setIsMuted] = useState<boolean>(soundManager.getMuted());
+
+  const handleToggleMute = () => {
+    const nextMuted = soundManager.toggleMute();
+    setIsMuted(nextMuted);
+  };
+
   return (
     <div className="bg-white rounded-2xl p-6 md:p-8 border border-zinc-200 shadow-sm space-y-8">
-      <div className="border-b border-zinc-200 pb-4">
-        <div className="flex items-center gap-2 text-indigo-600 font-semibold text-sm uppercase tracking-wider mb-1">
-          <Scale className="w-5 h-5" />
-          Rationalist Model of War
+      <div className="border-b border-zinc-200 pb-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <div className="flex items-center gap-2 text-indigo-600 font-semibold text-sm uppercase tracking-wider mb-1">
+            <Scale className="w-5 h-5" />
+            Rationalist Model of War
+          </div>
+          <h2 className="text-2xl font-bold text-zinc-900">Fearon Bargaining Simulation</h2>
+          <p className="text-zinc-600 text-sm mt-1">
+            Explore why rational states fight despite war being costly. Adjust power balances, war costs, and information to observe bargaining ranges and agreement breakdowns.
+          </p>
         </div>
-        <h2 className="text-2xl font-bold text-zinc-900">Fearon Bargaining Simulation</h2>
-        <p className="text-zinc-600 text-sm mt-1">
-          Explore why rational states fight despite war being costly. Adjust power balances, war costs, and information to observe bargaining ranges and agreement breakdowns.
-        </p>
+
+        <div className="flex items-center gap-2.5 self-start md:self-auto">
+          <button
+            onClick={handleToggleMute}
+            className="p-2.5 rounded-xl border border-zinc-200 bg-zinc-50 hover:bg-zinc-100 text-zinc-700 text-xs font-semibold flex items-center gap-1.5 transition-colors"
+            title={isMuted ? 'Unmute Sound Effects' : 'Mute Sound Effects'}
+          >
+            {isMuted ? <VolumeX className="w-4 h-4 text-rose-500" /> : <Volume2 className="w-4 h-4 text-indigo-600" />}
+          </button>
+        </div>
       </div>
 
       {/* Mode Switcher */}

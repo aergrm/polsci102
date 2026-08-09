@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { Network, Zap, ShieldAlert, ArrowRight, TrendingDown, Info, HelpCircle, Globe, RotateCcw } from 'lucide-react';
+import { Network, Zap, ShieldAlert, ArrowRight, TrendingDown, Info, HelpCircle, Globe, RotateCcw, Volume2, VolumeX } from 'lucide-react';
 import { Trade3DNetworkCanvas } from './Trade3DNetworkCanvas';
+import { soundManager } from '../../lib/soundEffects';
 
 interface PresetScenario {
   name: string;
@@ -62,9 +63,16 @@ export function TradeSanctionsGame() {
   const [targetDiversification, setTargetDiversification] = useState<number>(30);
   const [applySecondarySanctions, setApplySecondarySanctions] = useState<boolean>(false);
   const [showGuide, setShowGuide] = useState<boolean>(true);
+  const [isMuted, setIsMuted] = useState<boolean>(soundManager.getMuted());
+
+  const handleToggleMute = () => {
+    const nextMuted = soundManager.toggleMute();
+    setIsMuted(nextMuted);
+  };
 
   // Apply preset
   const applyPreset = (preset: PresetScenario) => {
+    soundManager.playClick();
     setSanctionIntensity(preset.sanctionIntensity);
     setChokepointControl(preset.chokepointControl);
     setTargetDiversification(preset.targetDiversification);
@@ -96,13 +104,23 @@ export function TradeSanctionsGame() {
           </p>
         </div>
 
-        <button
-          onClick={() => setShowGuide(!showGuide)}
-          className="px-4 py-2 bg-indigo-50 border border-indigo-200 text-indigo-700 hover:bg-indigo-100 rounded-xl text-xs font-bold flex items-center gap-2 transition-colors self-start md:self-auto"
-        >
-          <HelpCircle className="w-4 h-4" />
-          {showGuide ? 'Hide the Guide' : 'How Does This Work?'}
-        </button>
+        <div className="flex flex-wrap items-center gap-2.5 self-start md:self-auto">
+          <button
+            onClick={handleToggleMute}
+            className="p-2.5 rounded-xl border border-zinc-200 bg-zinc-50 hover:bg-zinc-100 text-zinc-700 text-xs font-semibold flex items-center gap-1.5 transition-colors"
+            title={isMuted ? 'Unmute Sound Effects' : 'Mute Sound Effects'}
+          >
+            {isMuted ? <VolumeX className="w-4 h-4 text-rose-500" /> : <Volume2 className="w-4 h-4 text-indigo-600" />}
+          </button>
+
+          <button
+            onClick={() => setShowGuide(!showGuide)}
+            className="px-3.5 py-2.5 bg-zinc-100 border border-zinc-200 text-zinc-800 hover:bg-zinc-200 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-colors"
+          >
+            <HelpCircle className="w-4 h-4" />
+            {showGuide ? 'Hide Guide' : 'Guide'}
+          </button>
+        </div>
       </div>
 
       {/* Plain English Concept Explainer Box */}

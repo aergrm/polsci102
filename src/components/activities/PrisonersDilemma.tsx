@@ -1,5 +1,7 @@
 import { useState } from 'react';
-import { Shield, Swords, RotateCcw, Award, Info, AlertCircle } from 'lucide-react';
+import { Shield, Swords, RotateCcw, Award, Info, AlertCircle, Volume2, VolumeX } from 'lucide-react';
+import { Dilemma3DMatrixCanvas } from './Dilemma3DMatrixCanvas';
+import { soundManager } from '../../lib/soundEffects';
 
 type Strategy = 'tit-for-tat' | 'hawkish' | 'dovish' | 'grim-trigger' | 'random';
 
@@ -41,8 +43,21 @@ export function PrisonersDilemma() {
     }
   };
 
+  const [isMuted, setIsMuted] = useState<boolean>(soundManager.getMuted());
+
+  const handleToggleMute = () => {
+    const nextMuted = soundManager.toggleMute();
+    setIsMuted(nextMuted);
+  };
+
   const handlePlayRound = (playerChoice: 'cooperate' | 'defect') => {
     if (roundsPlayed >= 10) return;
+
+    if (playerChoice === 'cooperate') {
+      soundManager.playSuccess();
+    } else {
+      soundManager.playWarning();
+    }
 
     const oppMove = getOpponentMove(strategy, history, playerDefectedEver);
 
@@ -91,16 +106,33 @@ export function PrisonersDilemma() {
 
   return (
     <div className="bg-white rounded-2xl p-6 md:p-8 border border-zinc-200 shadow-sm space-y-8">
-      <div className="border-b border-zinc-200 pb-4">
-        <div className="flex items-center gap-2 text-indigo-600 font-semibold text-sm uppercase tracking-wider mb-1">
-          <Swords className="w-5 h-5" />
-          Anarchy & Arms Races
+      <div className="border-b border-zinc-200 pb-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <div className="flex items-center gap-2 text-indigo-600 font-semibold text-sm uppercase tracking-wider mb-1">
+            <Swords className="w-5 h-5" />
+            Anarchy & Arms Races
+          </div>
+          <h2 className="text-2xl font-bold text-zinc-900">Security Dilemma & Prisoner's Dilemma Game</h2>
+          <p className="text-zinc-600 text-sm mt-1">
+            Simulate a 10-round strategic interaction between two rival states under international anarchy. Choose to Cooperate (Arms Control) or Defect (Military Expansion).
+          </p>
         </div>
-        <h2 className="text-2xl font-bold text-zinc-900">Security Dilemma & Prisoner's Dilemma Game</h2>
-        <p className="text-zinc-600 text-sm mt-1">
-          Simulate a 10-round strategic interaction between two rival states under international anarchy. Choose to Cooperate (Arms Control) or Defect (Military Expansion).
-        </p>
+
+        <button
+          onClick={handleToggleMute}
+          className="p-2.5 rounded-xl border border-zinc-200 bg-zinc-50 hover:bg-zinc-100 text-zinc-700 text-xs font-semibold flex items-center gap-1.5 transition-colors self-start md:self-auto"
+          title={isMuted ? 'Unmute Sound Effects' : 'Mute Sound Effects'}
+        >
+          {isMuted ? <VolumeX className="w-4 h-4 text-rose-500" /> : <Volume2 className="w-4 h-4 text-indigo-600" />}
+          <span className="hidden sm:inline">{isMuted ? 'Muted' : 'Audio On'}</span>
+        </button>
       </div>
+
+      {/* 3D Interactive Payoff Matrix */}
+      <Dilemma3DMatrixCanvas
+        playerMove={history.length > 0 ? history[history.length - 1].playerMove : null}
+        opponentMove={history.length > 0 ? history[history.length - 1].opponentMove : null}
+      />
 
       {/* Opponent Selection & Scoreboard */}
       <div className="grid md:grid-cols-3 gap-6">

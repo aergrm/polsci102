@@ -5,12 +5,13 @@ import { PrisonersDilemma } from './activities/PrisonersDilemma';
 import { UNSCNegotiator } from './activities/UNSCNegotiator';
 import { TradeSanctionsGame } from './activities/TradeSanctionsGame';
 import { LevelsOfAnalysisLab } from './activities/LevelsOfAnalysisLab';
+import { CrisisTimeline } from './activities/CrisisTimeline';
 import { TheoryMatcher } from './activities/TheoryMatcher';
 import { FlashcardTrainer } from './activities/FlashcardTrainer';
 import { QuizHub } from './activities/QuizHub';
-import { Scale, Swords, Globe, Network, Layers, Sparkles, BookOpen, HelpCircle, Gamepad2 } from 'lucide-react';
+import { Scale, Swords, Globe, Network, Layers, History, Sparkles, BookOpen, HelpCircle, Gamepad2 } from 'lucide-react';
 
-type SubTab = 'bargaining' | 'dilemma' | 'unsc' | 'trade' | 'levels' | 'theory' | 'flashcards' | 'quizzes';
+type SubTab = 'bargaining' | 'dilemma' | 'unsc' | 'trade' | 'levels' | 'timeline' | 'theory' | 'flashcards' | 'quizzes';
 
 export function Activities() {
   const [activeSubTab, setActiveSubTab] = useState<SubTab>('bargaining');
@@ -21,6 +22,7 @@ export function Activities() {
     { id: 'unsc', label: 'UN Security Council Simulator', icon: Globe, tag: 'Week 10' },
     { id: 'trade', label: 'Trade & Sanctions Network', icon: Network, tag: 'Week 11' },
     { id: 'levels', label: 'Levels of Analysis Lab', icon: Layers, tag: 'Week 1' },
+    { id: 'timeline', label: 'Crisis Timeline Explorer', icon: History, tag: 'Case Studies' },
     { id: 'theory', label: 'IR Theory Matcher', icon: Sparkles, tag: 'Week 3' },
     { id: 'flashcards', label: 'Flashcard Trainer', icon: BookOpen, tag: 'Core Terms' },
     { id: 'quizzes', label: 'Practice Quizzes Hub', icon: HelpCircle, tag: 'Exams' },
@@ -82,6 +84,7 @@ export function Activities() {
         {activeSubTab === 'unsc' && <UNSCNegotiator />}
         {activeSubTab === 'trade' && <TradeSanctionsGame />}
         {activeSubTab === 'levels' && <LevelsOfAnalysisLab />}
+        {activeSubTab === 'timeline' && <CrisisTimeline />}
         {activeSubTab === 'theory' && <TheoryMatcher />}
         {activeSubTab === 'flashcards' && <FlashcardTrainer />}
         {activeSubTab === 'quizzes' && <QuizHub />}

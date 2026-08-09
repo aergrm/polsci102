@@ -1,5 +1,7 @@
 import { useState } from 'react';
-import { Layers, CheckCircle2, XCircle, RefreshCw, HelpCircle, ArrowRight } from 'lucide-react';
+import { Layers, CheckCircle2, XCircle, RefreshCw, HelpCircle, ArrowRight, Volume2, VolumeX } from 'lucide-react';
+import { Levels3DSpheresCanvas } from './Levels3DSpheresCanvas';
+import { soundManager } from '../../lib/soundEffects';
 
 interface Scenario {
   id: string;
@@ -97,6 +99,12 @@ export function LevelsOfAnalysisLab() {
   const [selectedLevel, setSelectedLevel] = useState<'Systemic' | 'Domestic' | 'Individual' | null>(null);
   const [score, setScore] = useState(0);
   const [totalAttempts, setTotalAttempts] = useState(0);
+  const [isMuted, setIsMuted] = useState<boolean>(soundManager.getMuted());
+
+  const handleToggleMute = () => {
+    const nextMuted = soundManager.toggleMute();
+    setIsMuted(nextMuted);
+  };
 
   const scenario = scenarios[currentScenarioIndex];
   const currentClaim = scenario.claims[claimIndex];
@@ -106,7 +114,10 @@ export function LevelsOfAnalysisLab() {
     setSelectedLevel(level);
     setTotalAttempts(prev => prev + 1);
     if (level === currentClaim.level) {
+      soundManager.playSuccess();
       setScore(prev => prev + 1);
+    } else {
+      soundManager.playWarning();
     }
   };
 
@@ -141,16 +152,30 @@ export function LevelsOfAnalysisLab() {
           </p>
         </div>
 
-        <div className="flex items-center gap-3 bg-zinc-50 px-4 py-2 rounded-xl border border-zinc-200 text-xs font-medium">
-          <div>
-            Score: <span className="font-bold text-indigo-600">{score}</span> / {totalAttempts}
-          </div>
-          <div className="h-4 w-[1px] bg-zinc-300"></div>
-          <div className="text-zinc-500">
-            Case {currentScenarioIndex + 1} of {scenarios.length}
+        <div className="flex items-center gap-3 self-start md:self-auto">
+          <button
+            onClick={handleToggleMute}
+            className="p-2.5 rounded-xl border border-zinc-200 bg-zinc-50 hover:bg-zinc-100 text-zinc-700 text-xs font-semibold flex items-center gap-1.5 transition-colors"
+            title={isMuted ? 'Unmute Sound Effects' : 'Mute Sound Effects'}
+          >
+            {isMuted ? <VolumeX className="w-4 h-4 text-rose-500" /> : <Volume2 className="w-4 h-4 text-indigo-600" />}
+            <span className="hidden sm:inline">{isMuted ? 'Muted' : 'Audio On'}</span>
+          </button>
+
+          <div className="flex items-center gap-3 bg-zinc-50 px-4 py-2.5 rounded-xl border border-zinc-200 text-xs font-medium">
+            <div>
+              Score: <span className="font-bold text-indigo-600">{score}</span> / {totalAttempts}
+            </div>
+            <div className="h-4 w-[1px] bg-zinc-300"></div>
+            <div className="text-zinc-500">
+              Case {currentScenarioIndex + 1} of {scenarios.length}
+            </div>
           </div>
         </div>
       </div>
+
+      {/* 3D Concentric Level Visualizer */}
+      <Levels3DSpheresCanvas selectedLevel={selectedLevel} />
 
       {/* Case Context Box */}
       <div className="bg-indigo-50/60 border border-indigo-100 rounded-xl p-5 space-y-2">

@@ -1,5 +1,5 @@
 import { motion } from 'motion/react';
-import { Target, Award, AlertCircle, FileCheck, ShieldAlert, Cpu, Users, HeartHandshake, ExternalLink } from 'lucide-react';
+import { Target, Award, AlertCircle, FileCheck, ShieldAlert, Cpu, Users, ExternalLink } from 'lucide-react';
 import { assessments } from '../data';
 
 export function Syllabus() {
@@ -119,13 +119,6 @@ export function Syllabus() {
               Students must distinguish their ideas from others. All sources must be acknowledged in specified format. Suspected misconduct will be handled under Wisconsin Administrative Code Chapter UWS 14.
             </p>
           </div>
-        </div>
-
-        <div className="bg-indigo-50/70 p-5 rounded-xl border border-indigo-100 flex items-start gap-3 text-indigo-950 text-sm">
-          <HeartHandshake className="w-6 h-6 text-indigo-600 shrink-0 mt-0.5" />
-          <p>
-            <strong className="font-semibold">Instructor Commitment:</strong> "The syllabus is a roadmap, not a trap. Policies establish common expectations, but they do not eliminate judgment or compassion. When circumstances interfere with learning, communicate early so that we can identify a fair and academically responsible solution."
-          </p>
         </div>
       </section>
 
