@@ -1,5 +1,5 @@
 import { motion } from 'motion/react';
-import { ExternalLink, BookOpen, Newspaper, Library, HelpCircle, GraduationCap } from 'lucide-react';
+import { ExternalLink, BookOpen, Newspaper, Library, HelpCircle, GraduationCap, Database } from 'lucide-react';
 import { courseInfo } from '../data';
 
 export function Resources() {
@@ -32,6 +32,16 @@ export function Resources() {
         { name: 'International Security', url: 'https://direct.mit.edu/isec', desc: 'Journal dedicated to international conflict, nuclear strategy, and military security.' },
         { name: 'World Politics', url: 'https://www.cambridge.org/journals/world-politics', desc: 'Quarterly journal covering international relations and comparative politics.' },
         { name: 'Journal of Peace Research', url: 'https://journals.sagepub.com/home/jpr', desc: 'Interdisciplinary research on peace, conflict resolution, and violence.' },
+      ]
+    },
+    {
+      title: 'Major Empirical IR Datasets',
+      icon: <Database className="w-6 h-6 text-indigo-600" />,
+      items: [
+        { name: 'Correlates of War (COW) Project', url: 'https://correlatesofwar.org', desc: 'Militarized Interstate Disputes (MID 5.0), National Material Capabilities (CINC), and interstate wars.' },
+        { name: 'Uppsala Conflict Data Program (UCDP)', url: 'https://ucdp.uu.se', desc: 'The gold standard for armed conflicts, organized violence, and battle deaths worldwide.' },
+        { name: 'V-Dem (Varieties of Democracy) & Polity5', url: 'https://www.v-dem.net', desc: 'Comprehensive global dataset measuring regime types, democracy, and political rights.' },
+        { name: 'SIPRI Military Expenditure Database', url: 'https://www.sipri.org/databases/milex', desc: 'Authoritative data on global military spending, arms transfers, and defense burdens.' },
       ]
     }
   ];

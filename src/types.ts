@@ -1,4 +1,4 @@
-export type Tab = 'home' | 'syllabus' | 'schedule' | 'resources' | 'activities';
+export type Tab = 'home' | 'syllabus' | 'schedule' | 'resources' | 'activities' | 'datasets';
 
 export interface ReadingItem {
   text: string;

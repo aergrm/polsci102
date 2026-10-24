@@ -1,9 +1,14 @@
 import { motion } from 'motion/react';
-import { Mail, Globe, BookOpen, GraduationCap, HelpCircle, Calendar, CheckCircle2 } from 'lucide-react';
+import { Mail, Globe, BookOpen, GraduationCap, HelpCircle, Calendar, CheckCircle2, Database, Swords, ArrowRight } from 'lucide-react';
 import { courseInfo } from '../data';
 import { Hero3DCanvas } from './Hero3DCanvas';
+import { Tab } from '../types';
 
-export function Home() {
+interface HomeProps {
+  onNavigate?: (tab: Tab) => void;
+}
+
+export function Home({ onNavigate }: HomeProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 15 }}
@@ -28,6 +33,30 @@ export function Home() {
 
           <div className="bg-indigo-50/60 border border-indigo-100 rounded-xl p-5 italic text-indigo-950 text-sm md:text-base">
             "International relations asks why states fight, why they cooperate, how markets and institutions shape political choices, and whose interests are protected or neglected in the global system. This course gives students a practical set of analytical tools for answering those questions with theory, evidence, and careful comparison."
+          </div>
+
+          {/* New Empirical IR Data Lab Spotlight */}
+          <div className="p-5 rounded-2xl bg-gradient-to-r from-indigo-950 via-zinc-900 to-slate-900 text-white flex flex-col md:flex-row md:items-center justify-between gap-4 border border-indigo-900/50 shadow-sm">
+            <div className="space-y-1.5">
+              <div className="flex items-center gap-2 text-indigo-400 font-bold text-xs uppercase tracking-wider">
+                <Database className="w-4 h-4 text-indigo-400" />
+                Featured Academic Tool • IR Datasets Lab
+              </div>
+              <h3 className="text-lg font-bold text-white">
+                Explore Correlates of War (MID 5.0) & Major Empirical IR Datasets
+              </h3>
+              <p className="text-xs text-zinc-300 max-w-2xl leading-relaxed">
+                Analyze 2,436 militarized interstate disputes (1816–2014), compare Great Power material capabilities (CINC), explore the post-1945 shift toward civil wars (UCDP/PRIO), test the Democratic Peace, and track $2.4T in global military spending.
+              </p>
+            </div>
+            {onNavigate && (
+              <button
+                onClick={() => onNavigate('datasets')}
+                className="px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition-all flex items-center gap-1.5 self-start md:self-auto shrink-0 shadow-sm"
+              >
+                Launch Data Lab <ArrowRight className="w-3.5 h-3.5" />
+              </button>
+            )}
           </div>
         </div>
       </section>

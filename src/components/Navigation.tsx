@@ -1,4 +1,5 @@
-import { BookOpen, Calendar, FileText, Gamepad2, Home as HomeIcon } from 'lucide-react';
+import type { ReactNode } from 'react';
+import { BookOpen, Calendar, Database, FileText, Gamepad2, Home as HomeIcon } from 'lucide-react';
 import { Tab } from '../types';
 
 interface NavigationProps {
@@ -7,12 +8,13 @@ interface NavigationProps {
 }
 
 export function Navigation({ activeTab, setActiveTab }: NavigationProps) {
-  const navItems: { id: Tab; label: string; icon: React.ReactNode }[] = [
+  const navItems: { id: Tab; label: string; icon: ReactNode }[] = [
     { id: 'home', label: 'Home', icon: <HomeIcon className="w-4 h-4" /> },
     { id: 'syllabus', label: 'Syllabus', icon: <FileText className="w-4 h-4" /> },
     { id: 'schedule', label: 'Schedule', icon: <Calendar className="w-4 h-4" /> },
+    { id: 'datasets', label: 'IR Data Lab', icon: <Database className="w-4 h-4" /> },
+    { id: 'activities', label: 'Simulations & Practice', icon: <Gamepad2 className="w-4 h-4" /> },
     { id: 'resources', label: 'Resources', icon: <BookOpen className="w-4 h-4" /> },
-    { id: 'activities', label: 'Games & Practice', icon: <Gamepad2 className="w-4 h-4" /> },
   ];
 
   return (
