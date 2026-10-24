@@ -1,0 +1,353 @@
+{
+  "meta": {
+    "dataset": "COW Major Conventional Arms & Military Technology Transfers (v1.1)",
+    "authors": "David Kinsella, Correlates of War Project",
+    "citation": "Kinsella, David. (2026). 'Introducing the COW Conventional Arms and Military Technology Dataset.' COW Research Note.",
+    "temporalCoverage": "1816–2026",
+    "totalCountryYears": 16321,
+    "description": "Tracks sovereign adoption and deployment across 31 fundamental military technology categories, quantifying military modernization and tech diffusion.",
+    "downloadZip": "/public/assets/aistudio/Arms-TechnologyV1.1__1__7dcfeb82.zip"
+  },
+  "weaponsCatalog": [
+    {
+      "code": "s1",
+      "name": "Breech-loading Rifles",
+      "era": "1860s",
+      "domain": "Infantry"
+    },
+    {
+      "code": "s2",
+      "name": "Magazine Rifles",
+      "era": "1880s",
+      "domain": "Infantry"
+    },
+    {
+      "code": "s3",
+      "name": "Heavy Machine Guns",
+      "era": "1890s",
+      "domain": "Infantry"
+    },
+    {
+      "code": "s4",
+      "name": "Light Machine Guns",
+      "era": "1910s",
+      "domain": "Infantry"
+    },
+    {
+      "code": "s5",
+      "name": "Submachine Guns",
+      "era": "1920s",
+      "domain": "Infantry"
+    },
+    {
+      "code": "s6",
+      "name": "Assault Rifles",
+      "era": "1940s",
+      "domain": "Infantry"
+    },
+    {
+      "code": "m1",
+      "name": "Quick-firing Field Artillery",
+      "era": "1890s",
+      "domain": "Artillery"
+    },
+    {
+      "code": "m2",
+      "name": "Heavy Howitzers",
+      "era": "1910s",
+      "domain": "Artillery"
+    },
+    {
+      "code": "a1",
+      "name": "Dreadnought Battleships",
+      "era": "1906",
+      "domain": "Naval"
+    },
+    {
+      "code": "a2",
+      "name": "Submarines (Diesel)",
+      "era": "1900s",
+      "domain": "Naval"
+    },
+    {
+      "code": "a3",
+      "name": "Aircraft Carriers",
+      "era": "1920s",
+      "domain": "Naval"
+    },
+    {
+      "code": "a4",
+      "name": "Nuclear Submarines (SSN/SSBN)",
+      "era": "1954",
+      "domain": "Naval"
+    },
+    {
+      "code": "t1",
+      "name": "WW1 Tanks",
+      "era": "1916",
+      "domain": "Armor"
+    },
+    {
+      "code": "t2",
+      "name": "Interwar/WW2 Medium Tanks",
+      "era": "1930s",
+      "domain": "Armor"
+    },
+    {
+      "code": "t3",
+      "name": "Main Battle Tanks (MBT 1st/2nd Gen)",
+      "era": "1950s",
+      "domain": "Armor"
+    },
+    {
+      "code": "t4",
+      "name": "Modern Advanced MBT (3rd Gen)",
+      "era": "1980s",
+      "domain": "Armor"
+    },
+    {
+      "code": "f1",
+      "name": "Biplane Combat Aircraft",
+      "era": "1914",
+      "domain": "Aviation"
+    },
+    {
+      "code": "f2",
+      "name": "Monoplane Fighters",
+      "era": "1930s",
+      "domain": "Aviation"
+    },
+    {
+      "code": "f3",
+      "name": "Early Jet Fighters (1st Gen)",
+      "era": "1944",
+      "domain": "Aviation"
+    },
+    {
+      "code": "f4",
+      "name": "Supersonic Fighters (2nd/3rd Gen)",
+      "era": "1955",
+      "domain": "Aviation"
+    },
+    {
+      "code": "f5",
+      "name": "4th Generation Multi-role (F-15/16, Su-27)",
+      "era": "1974",
+      "domain": "Aviation"
+    },
+    {
+      "code": "f6",
+      "name": "5th Gen Stealth Fighters (F-22, F-35, J-20)",
+      "era": "2005",
+      "domain": "Aviation"
+    },
+    {
+      "code": "u1",
+      "name": "Guided Missiles & Precision Munitions",
+      "era": "1950s",
+      "domain": "Missiles"
+    },
+    {
+      "code": "b1",
+      "name": "Radar Air Defense",
+      "era": "1939",
+      "domain": "Electronics"
+    }
+  ],
+  "decadeTrends": [
+    {
+      "decade": 1810,
+      "avgScore": 2,
+      "maxScore": 2,
+      "leader": "Austria-Hungary"
+    },
+    {
+      "decade": 1820,
+      "avgScore": 2,
+      "maxScore": 3,
+      "leader": "France"
+    },
+    {
+      "decade": 1830,
+      "avgScore": 2,
+      "maxScore": 3,
+      "leader": "Baden"
+    },
+    {
+      "decade": 1840,
+      "avgScore": 2.3,
+      "maxScore": 5,
+      "leader": "Germany"
+    },
+    {
+      "decade": 1850,
+      "avgScore": 2.8,
+      "maxScore": 7,
+      "leader": "Germany"
+    },
+    {
+      "decade": 1860,
+      "avgScore": 3.8,
+      "maxScore": 8,
+      "leader": "Argentina"
+    },
+    {
+      "decade": 1870,
+      "avgScore": 5.1,
+      "maxScore": 10,
+      "leader": "Argentina"
+    },
+    {
+      "decade": 1880,
+      "avgScore": 7.4,
+      "maxScore": 12,
+      "leader": "Germany"
+    },
+    {
+      "decade": 1890,
+      "avgScore": 8.6,
+      "maxScore": 13,
+      "leader": "France"
+    },
+    {
+      "decade": 1900,
+      "avgScore": 9.4,
+      "maxScore": 13,
+      "leader": "Austria-Hungary"
+    },
+    {
+      "decade": 1910,
+      "avgScore": 10.8,
+      "maxScore": 15,
+      "leader": "France"
+    },
+    {
+      "decade": 1920,
+      "avgScore": 12.4,
+      "maxScore": 15,
+      "leader": "Belgium"
+    },
+    {
+      "decade": 1930,
+      "avgScore": 12.8,
+      "maxScore": 16,
+      "leader": "Argentina"
+    },
+    {
+      "decade": 1940,
+      "avgScore": 13.1,
+      "maxScore": 21,
+      "leader": "Russia"
+    },
+    {
+      "decade": 1950,
+      "avgScore": 16.9,
+      "maxScore": 24,
+      "leader": "Russia"
+    },
+    {
+      "decade": 1960,
+      "avgScore": 17.2,
+      "maxScore": 26,
+      "leader": "United States of America"
+    },
+    {
+      "decade": 1970,
+      "avgScore": 18.4,
+      "maxScore": 27,
+      "leader": "United States of America"
+    },
+    {
+      "decade": 1980,
+      "avgScore": 20.5,
+      "maxScore": 29,
+      "leader": "United States of America"
+    },
+    {
+      "decade": 1990,
+      "avgScore": 21.2,
+      "maxScore": 30,
+      "leader": "United States of America"
+    },
+    {
+      "decade": 2000,
+      "avgScore": 21.7,
+      "maxScore": 31,
+      "leader": "United States of America"
+    },
+    {
+      "decade": 2010,
+      "avgScore": 22.2,
+      "maxScore": 31,
+      "leader": "China"
+    },
+    {
+      "decade": 2020,
+      "avgScore": 22.6,
+      "maxScore": 31,
+      "leader": "China"
+    }
+  ],
+  "topModernArmies": [
+    {
+      "country": "China",
+      "score": 31
+    },
+    {
+      "country": "Israel",
+      "score": 31
+    },
+    {
+      "country": "Russia",
+      "score": 31
+    },
+    {
+      "country": "United Kingdom",
+      "score": 31
+    },
+    {
+      "country": "United States of America",
+      "score": 31
+    },
+    {
+      "country": "France",
+      "score": 30
+    },
+    {
+      "country": "Egypt",
+      "score": 29
+    },
+    {
+      "country": "Netherlands",
+      "score": 29
+    },
+    {
+      "country": "Pakistan",
+      "score": 29
+    },
+    {
+      "country": "Qatar",
+      "score": 29
+    },
+    {
+      "country": "Saudi Arabia",
+      "score": 29
+    },
+    {
+      "country": "South Korea",
+      "score": 29
+    },
+    {
+      "country": "United Arab Emirates",
+      "score": 29
+    },
+    {
+      "country": "Algeria",
+      "score": 28
+    },
+    {
+      "country": "Australia",
+      "score": 28
+    }
+  ]
+}

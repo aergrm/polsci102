@@ -1,4 +1,10 @@
 import midDataJson from './midFullData.json';
+import alliancesDataJson from './alliancesFullData.json';
+import dcadDataJson from './dcadFullData.json';
+import terrChangesDataJson from './terrChangesFullData.json';
+import nmcV7DataJson from './nmcV7FullData.json';
+import armsTechDataJson from './armsTechFullData.json';
+import tradeDataJson from './tradeFullData.json';
 
 export interface DisputeRecord {
   id: number;
@@ -78,7 +84,205 @@ export const midNotable: NotableDispute[] = midDataJson.notable;
 export const midAllDisputes: DisputeRecord[] = midDataJson.disputes;
 
 // ==========================================
-// 2. UCDP / PRIO Armed Conflict Dataset (1946 - 2023)
+// 2. COW Formal Alliances Dataset v4.1 (1816 - 2012)
+// ==========================================
+export interface AllianceMember {
+  state: string;
+  ccode: number;
+  startYear: number | null;
+  endYear: number | null;
+}
+
+export interface AllianceRecord {
+  id: number;
+  name: string;
+  category: 'Defense Pact' | 'Non-Aggression' | 'Entente' | 'Neutrality';
+  ssType: string;
+  startYear: number | null;
+  endYear: number | null;
+  isOngoing: boolean;
+  defense: boolean;
+  neutrality: boolean;
+  nonaggression: boolean;
+  entente: boolean;
+  memberCount: number;
+  members: string[];
+  memberDetails: AllianceMember[];
+}
+
+export interface DecadeAlliancePoint {
+  decade: string;
+  year: number;
+  defense: number;
+  nonaggression: number;
+  entente: number;
+  neutrality: number;
+  total: number;
+}
+
+export interface AnnualActivePoint {
+  year: number;
+  defense: number;
+  nonaggression: number;
+  entente: number;
+  neutrality: number;
+  total: number;
+}
+
+export interface CanonicalAlliance {
+  id: number;
+  title: string;
+  year: number;
+  endYear: number | string;
+  type: 'Defense Pact' | 'Non-Aggression' | 'Entente' | 'Neutrality';
+  members: string[];
+  irConcepts: string[];
+  strategicPurpose: string;
+  historicalOutcome: string;
+}
+
+export const alliancesSummary = alliancesDataJson.summary;
+export const alliancesDecades: DecadeAlliancePoint[] = alliancesDataJson.decadeSeries;
+export const alliancesAnnualActive: AnnualActivePoint[] = alliancesDataJson.annualActive;
+export const alliancesAll: AllianceRecord[] = alliancesDataJson.alliances as AllianceRecord[];
+
+export const canonicalAlliancesList: CanonicalAlliance[] = [
+  {
+    id: 227,
+    title: 'North Atlantic Treaty Organization (NATO)',
+    year: 1949,
+    endYear: 'Ongoing',
+    type: 'Defense Pact',
+    members: ['United States', 'United Kingdom', 'France', 'Canada', 'Italy', 'Benelux', 'Norway', '+ 23 expanded members'],
+    irConcepts: ['Article 5 Collective Defense', 'Extended Deterrence', 'Hegemonic Stability', 'Security Community'],
+    strategicPurpose: 'Formed under Article 51 of the UN Charter to deter Soviet aggression in Europe ("keep the Soviet Union out, the Americans in, and the Germans down"). Represents institutionalized collective defense with integrated military command.',
+    historicalOutcome: 'The longest-standing and most successful multilateral defense pact in modern history. Invoked Article 5 for the first and only time following the September 11, 2001 terrorist attacks on the United States.'
+  },
+  {
+    id: 67,
+    title: 'The Triple Alliance',
+    year: 1882,
+    endYear: 1915,
+    type: 'Defense Pact',
+    members: ['Germany', 'Austria-Hungary', 'Italy'],
+    irConcepts: ['Balance of Power', 'Chain-Ganging', 'Bismarckian Alliance System', 'Security Dilemma'],
+    strategicPurpose: 'Engineered by Otto von Bismarck to diplomatically isolate France after the Franco-Prussian War and secure Germany\'s southern flank through mutual defense guarantees with Vienna and Rome.',
+    historicalOutcome: 'Solidified the rigid bipolar alliance structure of pre-WWI Europe. Italy declared neutrality in 1914 and defected to the Allied side (Treaty of London 1915); Austria and Germany chained together into total war.'
+  },
+  {
+    id: 109,
+    title: 'Entente Cordiale & Anglo-Russian Convention',
+    year: 1904,
+    endYear: 1914,
+    type: 'Entente',
+    members: ['United Kingdom', 'France', 'Russia (1907)'],
+    irConcepts: ['Offshore Balancing', 'Abandonment of Splendid Isolation', 'Entente vs Defense Pact', 'Counter-Hegemony'],
+    strategicPurpose: 'Resolved colonial frictions in Africa and Central Asia ("The Great Game") to forge a joint diplomatic and military consultation front against rising German naval and continental power.',
+    historicalOutcome: 'While not a formal defense pact, consultations created high domestic expectations of British intervention in 1914 when Germany invaded neutral Belgium.'
+  },
+  {
+    id: 180,
+    title: 'Molotov-Ribbentrop Pact (Nazi-Soviet Pact)',
+    year: 1939,
+    endYear: 1941,
+    type: 'Non-Aggression',
+    members: ['Nazi Germany', 'Soviet Union (USSR)'],
+    irConcepts: ['Buck-Passing', 'Strategic Delay', 'Secret Protocols', 'Time-Inconsistency Problem'],
+    strategicPurpose: 'A non-aggression agreement with secret protocols dividing Poland, Finland, and the Baltic States into spheres of influence, allowing Hitler to invade Poland without facing a two-front war.',
+    historicalOutcome: 'Illustrates the extreme fragility of non-aggression pacts between revisionist powers. Shattered 22 months later by Operation Barbarossa (June 1941), the largest land invasion in human history.'
+  },
+  {
+    id: 243,
+    title: 'The Warsaw Treaty Organization (Warsaw Pact)',
+    year: 1955,
+    endYear: 1991,
+    type: 'Defense Pact',
+    members: ['Soviet Union', 'Poland', 'East Germany', 'Czechoslovakia', 'Hungary', 'Romania', 'Bulgaria', 'Albania'],
+    irConcepts: ['Hegemonic Hierarchy', 'Counter-Balancing NATO', 'Brezhnev Doctrine', 'Alliance Coercion'],
+    strategicPurpose: 'Established in response to the integration of a rearmed West Germany into NATO. Formally united the military commands of the Soviet bloc under Moscow\'s leadership.',
+    historicalOutcome: 'Used militarily not against external NATO forces, but internally to enforce bloc conformity and crush domestic uprisings in Hungary (1956) and Czechoslovakia (1968 Prague Spring). Dissolved in July 1991.'
+  },
+  {
+    id: 233,
+    title: 'U.S.–Japan Security Treaty (San Francisco System)',
+    year: 1951,
+    endYear: 'Ongoing',
+    type: 'Defense Pact',
+    members: ['United States', 'Japan'],
+    irConcepts: ['Asymmetric Alliance', 'Hub-and-Spokes Architecture', 'Base Rights for Defense Umbrella', 'Entrapment Risk'],
+    strategicPurpose: 'Created a bilateral security architecture granting the U.S. military bases in Japan (Okinawa, Yokosuka) in exchange for guaranteeing Japan\'s defense under Article 9 constitutional constraints.',
+    historicalOutcome: 'Cornerstone of U.S. forward posture and stability in East Asia throughout the Cold War and contemporary Pacific strategy; modernized to include joint cyber and ballistic missile defenses.'
+  },
+  {
+    id: 238,
+    title: 'U.S.–Republic of Korea (ROK) Mutual Defense Treaty',
+    year: 1953,
+    endYear: 'Ongoing',
+    type: 'Defense Pact',
+    members: ['United States', 'South Korea'],
+    irConcepts: ['Extended Nuclear Deterrence', 'Tripwire Strategy', 'Entrapment vs Abandonment Dilemma'],
+    strategicPurpose: 'Concluded immediately following the Korean War Armistice to deter North Korean aggression with stationing of U.S. forces along the DMZ acting as a credible commitment "tripwire".',
+    historicalOutcome: 'Successfully maintained deterrence on the Korean Peninsula for over seven decades; transformed from unilateral U.S. protection into a high-technology global partnership.'
+  },
+  {
+    id: 231,
+    title: 'Sino-Soviet Treaty of Friendship & Alliance',
+    year: 1950,
+    endYear: 1980,
+    type: 'Defense Pact',
+    members: ['Soviet Union', 'People\'s Republic of China'],
+    irConcepts: ['Ideological Alignment vs National Interest', 'Sino-Soviet Split', 'Multipolarity in Cold War'],
+    strategicPurpose: 'Signed between Mao Zedong and Joseph Stalin to establish a unified socialist defense front against Western capitalism, providing Soviet economic/technical aid and security assurances.',
+    historicalOutcome: 'Deteriorated rapidly after Stalin\'s death due to ideological polemics, Soviet refusal of nuclear sharing, and border skirmishes in 1969; ultimately led to the 1972 Sino-American rapprochement.'
+  },
+  {
+    id: 1,
+    title: 'Anglo-Portuguese Alliance (Treaty of Windsor)',
+    year: 1386,
+    endYear: 'Ongoing',
+    type: 'Defense Pact',
+    members: ['United Kingdom', 'Portugal'],
+    irConcepts: ['Oldest Active Alliance', 'Maritime Trade Security', 'Reputational Commitment'],
+    strategicPurpose: 'Mutual military assistance against Spanish and French hegemony, establishing deep naval and trade reciprocity between England and Portugal.',
+    historicalOutcome: 'Recognized by COW as the longest continuously active alliance in human history. Invoked in the Peninsular War, WWI, WWII (Allied naval access to Azores bases), and the 1982 Falklands War.'
+  },
+  {
+    id: 216,
+    title: 'Inter-American Treaty of Reciprocal Assistance (Rio Pact)',
+    year: 1947,
+    endYear: 'Ongoing',
+    type: 'Defense Pact',
+    members: ['United States', '21 Western Hemisphere Latin American Republics'],
+    irConcepts: ['Monroe Doctrine Institutionalization', 'Regional Collective Defense', 'Cuban Missile Crisis Invocation'],
+    strategicPurpose: 'Stipulated that an attack against one American state represents an attack against all American states, providing a hemisphere-wide defense mechanism against extra-continental aggression.',
+    historicalOutcome: 'Formally invoked during the 1962 Cuban Missile Crisis to authorize the naval quarantine of Cuba; tested during the 1982 Falklands War when the U.S. backed the UK over Argentina.'
+  },
+  {
+    id: 146,
+    title: 'The Little Entente',
+    year: 1920,
+    endYear: 1938,
+    type: 'Defense Pact',
+    members: ['Czechoslovakia', 'Romania', 'Yugoslavia'],
+    irConcepts: ['Status Quo Preservation', 'Revisionist Deterrence', 'Failure of Collective Security'],
+    strategicPurpose: 'Formed by post-WWI successor states backed by France to prevent Hungarian territorial revanchism and Habsburg restoration in Central Europe.',
+    historicalOutcome: 'Effective against minor revisionism during the 1920s, but disintegrated in 1938 when France and Britain appeased Nazi Germany at Munich, failing to defend Czechoslovak sovereignty.'
+  },
+  {
+    id: 345,
+    title: 'Collective Security Treaty Organization (CSTO)',
+    year: 1992,
+    endYear: 'Ongoing',
+    type: 'Defense Pact',
+    members: ['Russia', 'Belarus', 'Armenia', 'Kazakhstan', 'Kyrgyzstan', 'Tajikistan'],
+    irConcepts: ['Post-Soviet Security Architecture', 'Regional Hegemony', 'Internal Regime Protection'],
+    strategicPurpose: 'Evolved from the 1992 Tashkent Treaty to preserve military-technical coordination and mutual defense across post-Soviet Eurasia following the collapse of the USSR.',
+    historicalOutcome: 'Deployed peacekeepers for the first time in January 2022 during unrest in Kazakhstan; faced strain during the 2020-2023 Nagorno-Karabakh conflict over mutual defense commitments to Armenia.'
+  }
+];
+
+// ==========================================
+// 3. UCDP / PRIO Armed Conflict Dataset (1946 - 2023)
 // ==========================================
 export interface UcdpConflictPoint {
   year: number;
@@ -250,3 +454,238 @@ export const sipriSpendingTrends: SipriHistoryPoint[] = [
   { year: 2020, globalSpendingBillions: 2150, milestone: 'US-China strategic competition expansion' },
   { year: 2023, globalSpendingBillions: 2443, milestone: 'Record global high; Russian invasion of Ukraine' },
 ];
+
+// ==========================================
+// 6. Kinne Defense Cooperation Agreements (DCAD v1.0)
+// ==========================================
+export interface DcadRecord {
+  id: string;
+  c1: string;
+  c2: string;
+  ccode1: number;
+  ccode2: number;
+  year: number;
+  category: string;
+  categoryLabel: string;
+  type: string;
+  fullText: boolean;
+  asymmetry: boolean;
+  source: string;
+}
+
+export interface DcadCategory {
+  key: string;
+  label: string;
+  count: number;
+  pct: string;
+  desc: string;
+}
+
+export interface CanonicalDca {
+  title: string;
+  countries: string[];
+  year: number;
+  category: string;
+  irConcepts: string[];
+  strategicPurpose: string;
+  pedagogicalTakeaway: string;
+}
+
+export const dcadMeta = dcadDataJson.meta;
+export const dcadCategories: DcadCategory[] = dcadDataJson.categories;
+export const dcadAnnualSeries = dcadDataJson.annualSeries;
+export const dcadTopSignatories = dcadDataJson.topSignatories;
+export const dcadAllRecords: DcadRecord[] = dcadDataJson.records as DcadRecord[];
+
+export const canonicalDcaList: CanonicalDca[] = [
+  {
+    title: 'U.S.–Poland Defense Cooperation Agreement (Enhanced EDCA)',
+    countries: ['United States', 'Poland'],
+    year: 2020,
+    category: 'General Framework DCA / Basing',
+    irConcepts: ['Forward Defense', 'Rotational Basing', 'NATO Eastern Flank Deterrence', 'Legal Interoperability'],
+    strategicPurpose: 'Established status of forces agreements (SOFA), logistical hubs, and legal framework for expanding rotational US military troop presence (V Corps HQ) on NATO’s eastern frontier.',
+    pedagogicalTakeaway: 'Demonstrates how modern bilateral DCAs augment multilateral alliances (NATO) by addressing bilateral stationing rights and rapid logistics without requiring full treaty renegotiation.'
+  },
+  {
+    title: 'France–United Arab Emirates Defense Pact & Al Dhafra Base Access',
+    countries: ['France', 'United Arab Emirates'],
+    year: 1995,
+    category: 'General Framework DCA / Joint Basing',
+    irConcepts: ['Strategic Autonomy', 'Middle Eastern Forward Presence', 'Arms Procurement Ties'],
+    strategicPurpose: 'Provides France with naval, air, and ground military basing at Camp de la Paix in Abu Dhabi alongside strategic consultations and Rafale fighter interoperability.',
+    pedagogicalTakeaway: 'Illustrates how European middle powers project power into key maritime chokepoints (Strait of Hormuz) through targeted bilateral security pacts.'
+  },
+  {
+    title: 'UK–France Lancaster House Treaties',
+    countries: ['United Kingdom', 'France'],
+    year: 2010,
+    category: 'Defense Industrial & Joint Expeditionary Force',
+    irConcepts: ['Burden-Sharing', 'Defense Industrial Rationalization', 'Nuclear Warhead Hydrodynamics Testing'],
+    strategicPurpose: 'Created the Combined Joint Expeditionary Force (CJEF) and joint hydrodynamic testing facilities for nuclear safety to preserve European high-end capabilities amidst post-2008 fiscal austerity.',
+    pedagogicalTakeaway: 'Highlights how defense cooperation agreements facilitate high-level industrial integration between nuclear powers without compromising independent deterrence.'
+  },
+  {
+    title: 'India–United States LEMOA (Logistics Exchange Memorandum of Agreement)',
+    countries: ['India', 'United States'],
+    year: 2016,
+    category: 'Logistics & Interoperability',
+    irConcepts: ['Indo-Pacific Alignment', 'Strategic Non-Alignment (Strategic Autonomy)', 'Flexible Balancing'],
+    strategicPurpose: 'Allows both militaries to access designated port facilities, fuel replenishment, and repair hubs during joint drills, peacekeeping, and disaster relief across the Indian Ocean.',
+    pedagogicalTakeaway: 'Exemplifies why non-aligned rising powers prefer functional DCAs over formal mutual defense treaties, balancing against regional competitors while preserving sovereign autonomy.'
+  },
+  {
+    title: 'Turkey–Azerbaijan Strategic Partnership and Mutual Support',
+    countries: ['Turkey', 'Azerbaijan'],
+    year: 2010,
+    category: 'Training, Industrial & Joint Exercises',
+    irConcepts: ['Kin-State Security', 'Unmanned Aerial Systems (UAS) Transfer', 'Joint General Staff Coordination'],
+    strategicPurpose: 'Harmonized Azerbaijani military doctrine with NATO standards, provided Bayraktar drone platforms, and established joint military operational planning.',
+    pedagogicalTakeaway: 'Demonstrates how a targeted DCA can rapidly modernize a state\'s armed forces, with decisive battlefield impacts during the 2020 Second Nagorno-Karabakh War.'
+  }
+];
+
+// ==========================================
+// 7. COW Territorial Changes Dataset (v6, 1816–2018)
+// ==========================================
+export interface TerrChangeRecord {
+  id: string;
+  year: number;
+  month: number;
+  gainer: string;
+  gainerCcode: number;
+  loser: string;
+  loserCcode: number;
+  entity: string;
+  entityCcode: number;
+  procedur: string;
+  procedurLabel: string;
+  conflict: boolean;
+  areaSqKm: number | null;
+  pop: number | null;
+  indep: boolean;
+}
+
+export interface CanonicalTerrChange {
+  title: string;
+  year: number;
+  gainer: string;
+  loser: string;
+  procedure: string;
+  conflict: boolean;
+  irConcepts: string[];
+  historicalContext: string;
+  pedagogicalTakeaway: string;
+}
+
+export const terrChangesMeta = terrChangesDataJson.meta;
+export const terrChangesStats = terrChangesDataJson.stats;
+export const terrChangesProcedures = terrChangesDataJson.procedures;
+export const terrChangesDecades = terrChangesDataJson.decades;
+export const terrChangesTopGainers = terrChangesDataJson.topGainers;
+export const terrChangesTopLosers = terrChangesDataJson.topLosers;
+export const terrChangesAllRecords: TerrChangeRecord[] = terrChangesDataJson.records as TerrChangeRecord[];
+
+export const canonicalTerrChangesList: CanonicalTerrChange[] = [
+  {
+    title: 'Treaty of Frankfurt (Alsace-Lorraine Transfer)',
+    year: 1871,
+    gainer: 'Germany',
+    loser: 'France',
+    procedure: 'Military Conquest / Cession',
+    conflict: true,
+    irConcepts: ['Revanchism', 'Security Dilemma', 'Issue Invisibility', 'Perpetual Rivalry'],
+    historicalContext: 'Following French defeat in the Franco-Prussian War, Bismarck annexed Alsace and northern Lorraine to create a strategic buffer on the Rhine.',
+    pedagogicalTakeaway: 'Classic illustration of Vasquez\'s territorial thesis: annexing contested territory creates enduring revanchist dynamics that fueled French strategic calculations leading to World War I.'
+  },
+  {
+    title: 'The Alaska Purchase (Treaty of Cession)',
+    year: 1867,
+    gainer: 'United States',
+    loser: 'Russia / USSR',
+    procedure: 'Cession / Bilateral Treaty Purchase',
+    conflict: false,
+    irConcepts: ['Peaceful Territorial Reallocation', 'Strategic Liquidation', 'Anti-British Balancing'],
+    historicalContext: 'Secretary of State William Seward negotiated the purchase of Russian America for $7.2 million ($0.02 per acre) after Russia decided the distant colony was indefensible against Britain.',
+    pedagogicalTakeaway: 'Shows that peaceful territorial transfers occur when the holding power calculates the long-term defense liability outweighs current economic extractability.'
+  },
+  {
+    title: 'Treaty of Guadalupe Hidalgo (Mexican Cession)',
+    year: 1848,
+    gainer: 'United States',
+    loser: 'Mexico',
+    procedure: 'Military Conquest / Coerced Treaty Cession',
+    conflict: true,
+    irConcepts: ['Manifest Destiny', 'Territorial Expansionism', 'Coercive Bargaining', 'Border Revision'],
+    historicalContext: 'Concluded the Mexican-American War, with Mexico ceding 55% of its pre-war territory (California, Nevada, Utah, Arizona, New Mexico, parts of Colorado/Wyoming) for $15 million.',
+    pedagogicalTakeaway: 'Demonstrates coercive peace settlements where formal compensation masks the reality of military conquest and fundamentally reshapes continental borders.'
+  },
+  {
+    title: 'Treaty of Versailles Border Restructuring',
+    year: 1919,
+    gainer: 'Poland, France, Denmark, Belgium',
+    loser: 'Germany',
+    procedure: 'Multilateral Peace Settlement / Mandate',
+    conflict: true,
+    irConcepts: ['Self-Determination vs Revanchism', 'Polish Corridor', 'Fragile Peace Settlements'],
+    historicalContext: 'Dismantled Germany\'s eastern borders to create Poland and the Danzig corridor, returned Alsace-Lorraine to France, and placed the Saar under League of Nations administration.',
+    pedagogicalTakeaway: 'Illustrates how imposing severe territorial losses on a defeated major power without permanently eliminating its industrial capacity creates intense incentives for revisionist war.'
+  },
+  {
+    title: 'Six-Day War Territorial Transfers',
+    year: 1967,
+    gainer: 'Israel',
+    loser: 'Egypt, Jordan, Syria',
+    procedure: 'Military Conquest / Occupation',
+    conflict: true,
+    irConcepts: ['Preemptive Strike', 'UN Resolution 242', 'Land for Peace', 'Strategic Depth'],
+    historicalContext: 'Israel seized the Sinai Peninsula, Gaza Strip, West Bank, East Jerusalem, and the Golan Heights in six days of rapid maneuver warfare.',
+    pedagogicalTakeaway: 'Established the core diplomatic paradigm of the modern Arab-Israeli conflict ("Land for Peace"), leading to peaceful return of the Sinai in 1979 and ongoing disputes over remaining territories.'
+  },
+  {
+    title: 'Hong Kong Handover (Sino-British Joint Declaration)',
+    year: 1997,
+    gainer: 'China',
+    loser: 'United Kingdom',
+    procedure: 'Bilateral Treaty / Lease Expiration',
+    conflict: false,
+    irConcepts: ['De-imperialization', 'One Country Two Systems', 'Power Transition Reconciliation'],
+    historicalContext: 'The expiration of the 99-year lease on the New Territories prompted the peaceful transfer of British sovereignty over Hong Kong to the People\'s Republic of China.',
+    pedagogicalTakeaway: 'A prominent example of a peaceful, negotiated sovereign transfer between nuclear-armed major powers under institutional frameworks.'
+  },
+  {
+    title: 'Crimean Annexation',
+    year: 2014,
+    gainer: 'Russia / USSR',
+    loser: 'Ukraine',
+    procedure: 'Military Coercion / Annexation',
+    conflict: true,
+    irConcepts: ['Violation of Territorial Integrity Norm', 'Budapest Memorandum', 'Hybrid Warfare', 'Sevastopol Naval Base'],
+    historicalContext: 'Following the Euromaidan Revolution, Russian special forces occupied the Crimean peninsula, staging a disputed referendum and formally incorporating Crimea into the Russian Federation.',
+    pedagogicalTakeaway: 'The first major unilateral annexation of recognized sovereign European territory since WWII, fundamentally destabilizing the post-Cold War Helsinki security order.'
+  }
+];
+
+// ==========================================
+// 8. COW National Material Capabilities v7.0 (Official 1816–2025!)
+// ==========================================
+export const nmcV7Meta = nmcV7DataJson.meta;
+export const nmcV7MajorPowers = nmcV7DataJson.majorPowers;
+export const nmcV7Decades = nmcV7DataJson.decadalSnapshots;
+export const nmcV7SystemEvolution = nmcV7DataJson.systemEvolution;
+
+// ==========================================
+// 9. COW Conventional Arms & Military Technology Transfers (v1.1)
+// ==========================================
+export const armsTechMeta = armsTechDataJson.meta;
+export const armsTechWeapons = armsTechDataJson.weaponsCatalog;
+export const armsTechDecades = armsTechDataJson.decadeTrends;
+export const armsTechTop = armsTechDataJson.topModernArmies;
+
+// ==========================================
+// 10. COW Bilateral & National Trade (v4.0, Barbieri & Keshk)
+// ==========================================
+export const tradeMeta = tradeDataJson.meta;
+export const tradeYearly = tradeDataJson.yearlySeries;
+export const tradeTopTraders = tradeDataJson.topTraders2014;
+

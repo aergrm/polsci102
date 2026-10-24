@@ -1,0 +1,800 @@
+{
+  "meta": {
+    "dataset": "COW National & Bilateral Trade Dataset (v4.0)",
+    "authors": "Katherine Barbieri and Omar M. G. Keshk",
+    "citation": "Barbieri, Katherine, and Omar M. G. Keshk. (2016). 'Correlates of War Project Trade Data Set Codebook, Version 4.0.'",
+    "temporalCoverage": "1870–2014",
+    "totalCountryYears": 14410,
+    "description": "Quantifies imports and exports for every sovereign state. The foundational empirical benchmark for studying trade openness, economic interdependence, and the Capitalist Peace.",
+    "downloadZip": "/public/assets/aistudio/COW_Trade_4.0__1__c44c4b5c.zip"
+  },
+  "yearlySeries": [
+    {
+      "year": 1870,
+      "totalTradeBillions": 9.47,
+      "states": 32
+    },
+    {
+      "year": 1871,
+      "totalTradeBillions": 10.27,
+      "states": 31
+    },
+    {
+      "year": 1872,
+      "totalTradeBillions": 11.29,
+      "states": 30
+    },
+    {
+      "year": 1873,
+      "totalTradeBillions": 11.03,
+      "states": 31
+    },
+    {
+      "year": 1874,
+      "totalTradeBillions": 11.18,
+      "states": 30
+    },
+    {
+      "year": 1875,
+      "totalTradeBillions": 11.08,
+      "states": 31
+    },
+    {
+      "year": 1876,
+      "totalTradeBillions": 11.02,
+      "states": 33
+    },
+    {
+      "year": 1877,
+      "totalTradeBillions": 11.07,
+      "states": 33
+    },
+    {
+      "year": 1878,
+      "totalTradeBillions": 11.42,
+      "states": 35
+    },
+    {
+      "year": 1879,
+      "totalTradeBillions": 11.7,
+      "states": 35
+    },
+    {
+      "year": 1880,
+      "totalTradeBillions": 12.37,
+      "states": 34
+    },
+    {
+      "year": 1881,
+      "totalTradeBillions": 12.79,
+      "states": 33
+    },
+    {
+      "year": 1882,
+      "totalTradeBillions": 13.27,
+      "states": 34
+    },
+    {
+      "year": 1883,
+      "totalTradeBillions": 13.53,
+      "states": 35
+    },
+    {
+      "year": 1884,
+      "totalTradeBillions": 12.86,
+      "states": 35
+    },
+    {
+      "year": 1885,
+      "totalTradeBillions": 12.23,
+      "states": 35
+    },
+    {
+      "year": 1886,
+      "totalTradeBillions": 12.41,
+      "states": 36
+    },
+    {
+      "year": 1887,
+      "totalTradeBillions": 12.73,
+      "states": 37
+    },
+    {
+      "year": 1888,
+      "totalTradeBillions": 13.44,
+      "states": 38
+    },
+    {
+      "year": 1889,
+      "totalTradeBillions": 14.05,
+      "states": 36
+    },
+    {
+      "year": 1890,
+      "totalTradeBillions": 14.45,
+      "states": 37
+    },
+    {
+      "year": 1891,
+      "totalTradeBillions": 14.46,
+      "states": 38
+    },
+    {
+      "year": 1892,
+      "totalTradeBillions": 13.57,
+      "states": 37
+    },
+    {
+      "year": 1893,
+      "totalTradeBillions": 13.36,
+      "states": 38
+    },
+    {
+      "year": 1894,
+      "totalTradeBillions": 13.2,
+      "states": 38
+    },
+    {
+      "year": 1895,
+      "totalTradeBillions": 12.86,
+      "states": 39
+    },
+    {
+      "year": 1896,
+      "totalTradeBillions": 14.69,
+      "states": 38
+    },
+    {
+      "year": 1897,
+      "totalTradeBillions": 15.23,
+      "states": 38
+    },
+    {
+      "year": 1898,
+      "totalTradeBillions": 15.8,
+      "states": 38
+    },
+    {
+      "year": 1899,
+      "totalTradeBillions": 16.77,
+      "states": 39
+    },
+    {
+      "year": 1900,
+      "totalTradeBillions": 17.26,
+      "states": 41
+    },
+    {
+      "year": 1901,
+      "totalTradeBillions": 18.1,
+      "states": 41
+    },
+    {
+      "year": 1902,
+      "totalTradeBillions": 18.77,
+      "states": 43
+    },
+    {
+      "year": 1903,
+      "totalTradeBillions": 19.94,
+      "states": 42
+    },
+    {
+      "year": 1904,
+      "totalTradeBillions": 20.76,
+      "states": 42
+    },
+    {
+      "year": 1905,
+      "totalTradeBillions": 22.45,
+      "states": 43
+    },
+    {
+      "year": 1906,
+      "totalTradeBillions": 25.21,
+      "states": 43
+    },
+    {
+      "year": 1907,
+      "totalTradeBillions": 26.79,
+      "states": 42
+    },
+    {
+      "year": 1908,
+      "totalTradeBillions": 25.17,
+      "states": 43
+    },
+    {
+      "year": 1909,
+      "totalTradeBillions": 27.07,
+      "states": 44
+    },
+    {
+      "year": 1910,
+      "totalTradeBillions": 27.79,
+      "states": 44
+    },
+    {
+      "year": 1911,
+      "totalTradeBillions": 30.36,
+      "states": 44
+    },
+    {
+      "year": 1912,
+      "totalTradeBillions": 33.23,
+      "states": 43
+    },
+    {
+      "year": 1913,
+      "totalTradeBillions": 33.92,
+      "states": 42
+    },
+    {
+      "year": 1914,
+      "totalTradeBillions": 24.26,
+      "states": 35
+    },
+    {
+      "year": 1915,
+      "totalTradeBillions": 23.22,
+      "states": 35
+    },
+    {
+      "year": 1916,
+      "totalTradeBillions": 31.67,
+      "states": 34
+    },
+    {
+      "year": 1917,
+      "totalTradeBillions": 35.79,
+      "states": 31
+    },
+    {
+      "year": 1918,
+      "totalTradeBillions": 37.66,
+      "states": 33
+    },
+    {
+      "year": 1919,
+      "totalTradeBillions": 52.23,
+      "states": 43
+    },
+    {
+      "year": 1920,
+      "totalTradeBillions": 63.4,
+      "states": 58
+    },
+    {
+      "year": 1921,
+      "totalTradeBillions": 39.4,
+      "states": 59
+    },
+    {
+      "year": 1922,
+      "totalTradeBillions": 41.66,
+      "states": 60
+    },
+    {
+      "year": 1923,
+      "totalTradeBillions": 45.66,
+      "states": 60
+    },
+    {
+      "year": 1924,
+      "totalTradeBillions": 50.46,
+      "states": 59
+    },
+    {
+      "year": 1925,
+      "totalTradeBillions": 56.59,
+      "states": 60
+    },
+    {
+      "year": 1926,
+      "totalTradeBillions": 55,
+      "states": 61
+    },
+    {
+      "year": 1927,
+      "totalTradeBillions": 64.22,
+      "states": 61
+    },
+    {
+      "year": 1928,
+      "totalTradeBillions": 67.12,
+      "states": 61
+    },
+    {
+      "year": 1929,
+      "totalTradeBillions": 68.48,
+      "states": 61
+    },
+    {
+      "year": 1930,
+      "totalTradeBillions": 55.27,
+      "states": 61
+    },
+    {
+      "year": 1931,
+      "totalTradeBillions": 40.73,
+      "states": 61
+    },
+    {
+      "year": 1932,
+      "totalTradeBillions": 26.95,
+      "states": 62
+    },
+    {
+      "year": 1933,
+      "totalTradeBillions": 29.55,
+      "states": 62
+    },
+    {
+      "year": 1934,
+      "totalTradeBillions": 38.8,
+      "states": 63
+    },
+    {
+      "year": 1935,
+      "totalTradeBillions": 34.2,
+      "states": 65
+    },
+    {
+      "year": 1936,
+      "totalTradeBillions": 43.66,
+      "states": 63
+    },
+    {
+      "year": 1937,
+      "totalTradeBillions": 53.87,
+      "states": 64
+    },
+    {
+      "year": 1938,
+      "totalTradeBillions": 39.49,
+      "states": 64
+    },
+    {
+      "year": 1939,
+      "totalTradeBillions": 46.8,
+      "states": 63
+    },
+    {
+      "year": 1940,
+      "totalTradeBillions": 42.3,
+      "states": 50
+    },
+    {
+      "year": 1941,
+      "totalTradeBillions": 31.89,
+      "states": 43
+    },
+    {
+      "year": 1942,
+      "totalTradeBillions": 47.27,
+      "states": 44
+    },
+    {
+      "year": 1943,
+      "totalTradeBillions": 49.68,
+      "states": 41
+    },
+    {
+      "year": 1944,
+      "totalTradeBillions": 48.4,
+      "states": 42
+    },
+    {
+      "year": 1945,
+      "totalTradeBillions": 39.59,
+      "states": 50
+    },
+    {
+      "year": 1946,
+      "totalTradeBillions": 64.04,
+      "states": 65
+    },
+    {
+      "year": 1947,
+      "totalTradeBillions": 103.35,
+      "states": 67
+    },
+    {
+      "year": 1948,
+      "totalTradeBillions": 101.99,
+      "states": 71
+    },
+    {
+      "year": 1949,
+      "totalTradeBillions": 100.96,
+      "states": 74
+    },
+    {
+      "year": 1950,
+      "totalTradeBillions": 100.62,
+      "states": 74
+    },
+    {
+      "year": 1951,
+      "totalTradeBillions": 137.62,
+      "states": 74
+    },
+    {
+      "year": 1952,
+      "totalTradeBillions": 136.77,
+      "states": 76
+    },
+    {
+      "year": 1953,
+      "totalTradeBillions": 136.21,
+      "states": 76
+    },
+    {
+      "year": 1954,
+      "totalTradeBillions": 142.77,
+      "states": 80
+    },
+    {
+      "year": 1955,
+      "totalTradeBillions": 170,
+      "states": 82
+    },
+    {
+      "year": 1956,
+      "totalTradeBillions": 190.25,
+      "states": 85
+    },
+    {
+      "year": 1957,
+      "totalTradeBillions": 209.71,
+      "states": 87
+    },
+    {
+      "year": 1958,
+      "totalTradeBillions": 201.58,
+      "states": 88
+    },
+    {
+      "year": 1959,
+      "totalTradeBillions": 218.39,
+      "states": 87
+    },
+    {
+      "year": 1960,
+      "totalTradeBillions": 226.92,
+      "states": 111
+    },
+    {
+      "year": 1961,
+      "totalTradeBillions": 240.36,
+      "states": 114
+    },
+    {
+      "year": 1962,
+      "totalTradeBillions": 263.59,
+      "states": 115
+    },
+    {
+      "year": 1963,
+      "totalTradeBillions": 300.16,
+      "states": 119
+    },
+    {
+      "year": 1964,
+      "totalTradeBillions": 350.03,
+      "states": 126
+    },
+    {
+      "year": 1965,
+      "totalTradeBillions": 382.38,
+      "states": 127
+    },
+    {
+      "year": 1966,
+      "totalTradeBillions": 419.3,
+      "states": 127
+    },
+    {
+      "year": 1967,
+      "totalTradeBillions": 440.65,
+      "states": 127
+    },
+    {
+      "year": 1968,
+      "totalTradeBillions": 491.37,
+      "states": 129
+    },
+    {
+      "year": 1969,
+      "totalTradeBillions": 566.6,
+      "states": 132
+    },
+    {
+      "year": 1970,
+      "totalTradeBillions": 644.7,
+      "states": 138
+    },
+    {
+      "year": 1971,
+      "totalTradeBillions": 715.51,
+      "states": 138
+    },
+    {
+      "year": 1972,
+      "totalTradeBillions": 848.43,
+      "states": 139
+    },
+    {
+      "year": 1973,
+      "totalTradeBillions": 1174.45,
+      "states": 141
+    },
+    {
+      "year": 1974,
+      "totalTradeBillions": 1698.6,
+      "states": 142
+    },
+    {
+      "year": 1975,
+      "totalTradeBillions": 1787.24,
+      "states": 142
+    },
+    {
+      "year": 1976,
+      "totalTradeBillions": 2016.28,
+      "states": 142
+    },
+    {
+      "year": 1977,
+      "totalTradeBillions": 2303.56,
+      "states": 144
+    },
+    {
+      "year": 1978,
+      "totalTradeBillions": 2666.63,
+      "states": 144
+    },
+    {
+      "year": 1979,
+      "totalTradeBillions": 3339.39,
+      "states": 145
+    },
+    {
+      "year": 1980,
+      "totalTradeBillions": 4058.64,
+      "states": 145
+    },
+    {
+      "year": 1981,
+      "totalTradeBillions": 3870.41,
+      "states": 154
+    },
+    {
+      "year": 1982,
+      "totalTradeBillions": 3600.65,
+      "states": 154
+    },
+    {
+      "year": 1983,
+      "totalTradeBillions": 3492.62,
+      "states": 154
+    },
+    {
+      "year": 1984,
+      "totalTradeBillions": 3696.88,
+      "states": 154
+    },
+    {
+      "year": 1985,
+      "totalTradeBillions": 3800.26,
+      "states": 154
+    },
+    {
+      "year": 1986,
+      "totalTradeBillions": 4136.57,
+      "states": 154
+    },
+    {
+      "year": 1987,
+      "totalTradeBillions": 4838.11,
+      "states": 154
+    },
+    {
+      "year": 1988,
+      "totalTradeBillions": 5508.89,
+      "states": 154
+    },
+    {
+      "year": 1989,
+      "totalTradeBillions": 5949.99,
+      "states": 154
+    },
+    {
+      "year": 1990,
+      "totalTradeBillions": 6758.97,
+      "states": 152
+    },
+    {
+      "year": 1991,
+      "totalTradeBillions": 6929.72,
+      "states": 152
+    },
+    {
+      "year": 1992,
+      "totalTradeBillions": 7366.4,
+      "states": 166
+    },
+    {
+      "year": 1993,
+      "totalTradeBillions": 7211.24,
+      "states": 170
+    },
+    {
+      "year": 1994,
+      "totalTradeBillions": 8251.18,
+      "states": 170
+    },
+    {
+      "year": 1995,
+      "totalTradeBillions": 9847.28,
+      "states": 170
+    },
+    {
+      "year": 1996,
+      "totalTradeBillions": 10290.68,
+      "states": 170
+    },
+    {
+      "year": 1997,
+      "totalTradeBillions": 10406.36,
+      "states": 170
+    },
+    {
+      "year": 1998,
+      "totalTradeBillions": 10324.06,
+      "states": 171
+    },
+    {
+      "year": 1999,
+      "totalTradeBillions": 11231.2,
+      "states": 171
+    },
+    {
+      "year": 2000,
+      "totalTradeBillions": 12664.78,
+      "states": 171
+    },
+    {
+      "year": 2001,
+      "totalTradeBillions": 12247.21,
+      "states": 171
+    },
+    {
+      "year": 2002,
+      "totalTradeBillions": 12774.7,
+      "states": 171
+    },
+    {
+      "year": 2003,
+      "totalTradeBillions": 14941.34,
+      "states": 171
+    },
+    {
+      "year": 2004,
+      "totalTradeBillions": 18203.21,
+      "states": 171
+    },
+    {
+      "year": 2005,
+      "totalTradeBillions": 20769.48,
+      "states": 172
+    },
+    {
+      "year": 2006,
+      "totalTradeBillions": 23943.4,
+      "states": 172
+    },
+    {
+      "year": 2007,
+      "totalTradeBillions": 27672.97,
+      "states": 172
+    },
+    {
+      "year": 2008,
+      "totalTradeBillions": 32028.66,
+      "states": 172
+    },
+    {
+      "year": 2009,
+      "totalTradeBillions": 24677.28,
+      "states": 172
+    },
+    {
+      "year": 2010,
+      "totalTradeBillions": 29734.54,
+      "states": 172
+    },
+    {
+      "year": 2011,
+      "totalTradeBillions": 35541.1,
+      "states": 172
+    },
+    {
+      "year": 2012,
+      "totalTradeBillions": 35735.7,
+      "states": 172
+    },
+    {
+      "year": 2013,
+      "totalTradeBillions": 36338.03,
+      "states": 172
+    },
+    {
+      "year": 2014,
+      "totalTradeBillions": 36679.87,
+      "states": 172
+    }
+  ],
+  "topTraders2014": [
+    {
+      "country": "China",
+      "tradeBillions": 5337.7
+    },
+    {
+      "country": "United States of America",
+      "tradeBillions": 3968.6
+    },
+    {
+      "country": "Germany",
+      "tradeBillions": 2621.4
+    },
+    {
+      "country": "Japan",
+      "tradeBillions": 1502.4
+    },
+    {
+      "country": "Netherlands",
+      "tradeBillions": 1241.3
+    },
+    {
+      "country": "France",
+      "tradeBillions": 1233.3
+    },
+    {
+      "country": "United Kingdom",
+      "tradeBillions": 1114.9
+    },
+    {
+      "country": "South Korea",
+      "tradeBillions": 1098.2
+    },
+    {
+      "country": "Canada",
+      "tradeBillions": 981.7
+    },
+    {
+      "country": "Italy",
+      "tradeBillions": 972.6
+    },
+    {
+      "country": "Belgium",
+      "tradeBillions": 902.3
+    },
+    {
+      "country": "Mexico",
+      "tradeBillions": 837.5
+    },
+    {
+      "country": "Russia",
+      "tradeBillions": 783.5
+    },
+    {
+      "country": "India",
+      "tradeBillions": 778.2
+    },
+    {
+      "country": "Singapore",
+      "tradeBillions": 776.4
+    }
+  ]
+}

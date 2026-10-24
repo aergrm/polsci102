@@ -38,7 +38,8 @@ export function Resources() {
       title: 'Major Empirical IR Datasets',
       icon: <Database className="w-6 h-6 text-indigo-600" />,
       items: [
-        { name: 'Correlates of War (COW) Project', url: 'https://correlatesofwar.org', desc: 'Militarized Interstate Disputes (MID 5.0), National Material Capabilities (CINC), and interstate wars.' },
+        { name: 'Correlates of War (COW) Project', url: 'https://correlatesofwar.org', desc: 'Militarized Interstate Disputes (MID 5.0), Formal Alliances (v4.1), National Material Capabilities (NMC v7.0), Territorial Changes (v6), Arms Technology (v1.1), and Trade (v4.0).' },
+        { name: 'Kinne Defense Cooperation Agreements (DCAD)', url: 'https://brandonkinne.ucdavis.edu', desc: 'Bilateral defense agreements database (1980–2010) documenting military training, basing, intelligence, and defense industrial ties.' },
         { name: 'Uppsala Conflict Data Program (UCDP)', url: 'https://ucdp.uu.se', desc: 'The gold standard for armed conflicts, organized violence, and battle deaths worldwide.' },
         { name: 'V-Dem (Varieties of Democracy) & Polity5', url: 'https://www.v-dem.net', desc: 'Comprehensive global dataset measuring regime types, democracy, and political rights.' },
         { name: 'SIPRI Military Expenditure Database', url: 'https://www.sipri.org/databases/milex', desc: 'Authoritative data on global military spending, arms transfers, and defense burdens.' },

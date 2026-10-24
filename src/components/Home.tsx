@@ -43,10 +43,10 @@ export function Home({ onNavigate }: HomeProps) {
                 Featured Academic Tool • IR Datasets Lab
               </div>
               <h3 className="text-lg font-bold text-white">
-                Explore Correlates of War (MID 5.0) & Major Empirical IR Datasets
+                Explore Correlates of War (MID 5.0, Alliances, NMC v7, Terr Changes, Trade) & Kinne DCA
               </h3>
               <p className="text-xs text-zinc-300 max-w-2xl leading-relaxed">
-                Analyze 2,436 militarized interstate disputes (1816–2014), compare Great Power material capabilities (CINC), explore the post-1945 shift toward civil wars (UCDP/PRIO), test the Democratic Peace, and track $2.4T in global military spending.
+                Analyze 2,436 militarized disputes, 1,871 bilateral defense cooperation agreements (Kinne DCA), 842 sovereign territorial transfers, 414 formal military alliances, official 1816–2025 NMC v7.0 capabilities (CINC), 31 military weapon innovations, 145 years of global trade integration, UCDP/PRIO conflicts, and Democratic Peace dyads.
               </p>
             </div>
             {onNavigate && (

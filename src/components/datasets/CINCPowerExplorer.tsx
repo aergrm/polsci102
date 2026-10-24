@@ -1,9 +1,27 @@
 import { useState } from 'react';
-import { cincCapabilitiesData } from '../../data/irDatasets';
-import { Activity, Zap, TrendingUp, Info, Scale, Shield, Building2 } from 'lucide-react';
+import {
+  cincCapabilitiesData,
+  nmcV7Meta,
+  nmcV7MajorPowers
+} from '../../data/irDatasets';
+import {
+  Activity,
+  Zap,
+  TrendingUp,
+  Info,
+  Scale,
+  Shield,
+  Building2,
+  Download,
+  Flame,
+  Users,
+  Factory,
+  DollarSign
+} from 'lucide-react';
 
 export function CINCPowerExplorer() {
   const [selectedCountry, setSelectedCountry] = useState<string>('all');
+  const [activeMetric, setActiveMetric] = useState<'cinc' | 'milper' | 'milex' | 'irst' | 'pec'>('cinc');
 
   const countries = [
     { key: 'usa', label: 'United States', color: '#2563eb' },
@@ -16,52 +34,69 @@ export function CINCPowerExplorer() {
   ];
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       {/* Header Banner */}
       <div className="bg-gradient-to-r from-blue-950 via-slate-900 to-indigo-950 text-white rounded-3xl p-6 md:p-8 shadow-sm border border-blue-900/40 relative overflow-hidden">
-        <div className="space-y-4 relative z-10">
-          <div className="flex flex-wrap items-center gap-2 text-blue-400 font-bold text-xs uppercase tracking-wider">
-            <span className="px-2.5 py-1 rounded-md bg-blue-950/80 border border-blue-800/60 flex items-center gap-1.5">
-              <Scale className="w-3.5 h-3.5 text-blue-400" />
-              Correlates of War (COW) National Material Capabilities
-            </span>
-            <span className="px-2.5 py-1 rounded-md bg-zinc-800/80 border border-zinc-700/60 text-zinc-300">
-              CINC Score: 1820 – 2020 (Singer, Bremer, Stuckey)
-            </span>
+        <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 relative z-10">
+          <div className="space-y-3">
+            <div className="flex flex-wrap items-center gap-2 text-blue-400 font-bold text-xs uppercase tracking-wider">
+              <span className="px-2.5 py-1 rounded-md bg-blue-950/80 border border-blue-800/60 flex items-center gap-1.5">
+                <Scale className="w-3.5 h-3.5 text-blue-400" />
+                Correlates of War (COW) National Material Capabilities
+              </span>
+              <span className="px-2.5 py-1 rounded-md bg-emerald-950/80 border border-emerald-800/60 text-emerald-300">
+                Official NMC v7.0 Release (1816 – 2025)
+              </span>
+            </div>
+
+            <h2 className="text-2xl md:text-3xl font-extrabold tracking-tight">
+              National Material Capabilities & Power Transition Theory
+            </h2>
+            <p className="text-zinc-300 text-sm md:text-base max-w-3xl leading-relaxed">
+              The Composite Index of National Capability (CINC) is political science's gold-standard quantitative measure of state power. 
+              Synthesizing demographic, industrial, and military capacity, CINC captures systemic power shifts, hegemonic transitions, 
+              and the structural preconditions for Great Power conflict.
+            </p>
           </div>
 
-          <h2 className="text-2xl md:text-3xl font-extrabold tracking-tight">
-            National Material Capabilities & Power Transition Theory
-          </h2>
-          <p className="text-zinc-300 text-sm md:text-base max-w-3xl leading-relaxed">
-            The Composite Index of National Capability (CINC) is political science's most widely cited quantitative measure of national power. It calculates each state's share of total global system power by synthesizing 6 demographic, industrial, and military components.
-          </p>
+          <div className="shrink-0">
+            <a
+              href="/public/assets/aistudio/NMCv7__1__07b7396c.zip"
+              download="NMCv7__1__07b7396c.zip"
+              className="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold transition-colors shadow"
+              title="Download official COW NMC v7.0 ZIP archive"
+            >
+              <Download className="w-4 h-4" />
+              Raw NMC v7 ZIP
+            </a>
+          </div>
+        </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 pt-2 text-xs">
-            <div className="bg-black/40 backdrop-blur-md p-3 rounded-xl border border-white/10">
-              <div className="text-zinc-400 font-medium">1. Military Personnel</div>
-              <div className="text-sm font-bold text-blue-300 mt-1">Active troops</div>
-            </div>
-            <div className="bg-black/40 backdrop-blur-md p-3 rounded-xl border border-white/10">
-              <div className="text-zinc-400 font-medium">2. Military Spending</div>
-              <div className="text-sm font-bold text-blue-300 mt-1">Defense budget</div>
-            </div>
-            <div className="bg-black/40 backdrop-blur-md p-3 rounded-xl border border-white/10">
-              <div className="text-zinc-400 font-medium">3. Steel Production</div>
-              <div className="text-sm font-bold text-blue-300 mt-1">Heavy industry</div>
-            </div>
-            <div className="bg-black/40 backdrop-blur-md p-3 rounded-xl border border-white/10">
-              <div className="text-zinc-400 font-medium">4. Energy Consumption</div>
-              <div className="text-sm font-bold text-blue-300 mt-1">Commercial fuels</div>
-            </div>
-            <div className="bg-black/40 backdrop-blur-md p-3 rounded-xl border border-white/10">
-              <div className="text-zinc-400 font-medium">5. Total Population</div>
-              <div className="text-sm font-bold text-blue-300 mt-1">Human manpower</div>
-            </div>
-            <div className="bg-black/40 backdrop-blur-md p-3 rounded-xl border border-white/10">
-              <div className="text-zinc-400 font-medium">6. Urban Population</div>
-              <div className="text-sm font-bold text-blue-300 mt-1">Industrialization</div>
-            </div>
+        {/* 6 Components Grid */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 pt-5 text-xs">
+          <div className="bg-black/40 backdrop-blur-md p-3 rounded-xl border border-white/10">
+            <div className="text-zinc-400 font-medium">1. Military Personnel</div>
+            <div className="text-sm font-bold text-blue-300 mt-1">milper (thousands)</div>
+          </div>
+          <div className="bg-black/40 backdrop-blur-md p-3 rounded-xl border border-white/10">
+            <div className="text-zinc-400 font-medium">2. Military Spending</div>
+            <div className="text-sm font-bold text-blue-300 mt-1">milex ($ thousands)</div>
+          </div>
+          <div className="bg-black/40 backdrop-blur-md p-3 rounded-xl border border-white/10">
+            <div className="text-zinc-400 font-medium">3. Steel Production</div>
+            <div className="text-sm font-bold text-blue-300 mt-1">irst (metric tons)</div>
+          </div>
+          <div className="bg-black/40 backdrop-blur-md p-3 rounded-xl border border-white/10">
+            <div className="text-zinc-400 font-medium">4. Energy Consumption</div>
+            <div className="text-sm font-bold text-blue-300 mt-1">pec (coal equiv.)</div>
+          </div>
+          <div className="bg-black/40 backdrop-blur-md p-3 rounded-xl border border-white/10">
+            <div className="text-zinc-400 font-medium">5. Total Population</div>
+            <div className="text-sm font-bold text-blue-300 mt-1">tpop (demographics)</div>
+          </div>
+          <div className="bg-black/40 backdrop-blur-md p-3 rounded-xl border border-white/10">
+            <div className="text-zinc-400 font-medium">6. Urban Population</div>
+            <div className="text-sm font-bold text-blue-300 mt-1">upop (urbanization)</div>
           </div>
         </div>
       </div>
@@ -74,7 +109,7 @@ export function CINCPowerExplorer() {
               Great Power Share of Global Capability (1820 – 2020)
             </h3>
             <p className="text-xs text-zinc-500 mt-1">
-              Shows the rise, peak, and relative decline of Great Powers over 200 years of international politics.
+              Shows the rise, peak, and relative transition of Great Powers over 200 years of international politics.
             </p>
           </div>
 
