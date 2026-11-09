@@ -16,7 +16,12 @@ import {
   Flame,
   Shield,
   Compass,
-  ArrowRight
+  ArrowRight,
+  Pin,
+  Search,
+  Crosshair,
+  ExternalLink,
+  ChevronDown
 } from 'lucide-react';
 import worldGeoData from '../../data/worldGeo.json';
 import metricsData from '../../data/countryMetrics.json';
@@ -136,8 +141,8 @@ const REGIONAL_VIEWS = [
 
 export function ChoroplethMapVisualizer() {
   const [selectedMetricKey, setSelectedMetricKey] = useState<MetricKey>('conflictIntensity');
-  const [hoveredCountryCode, setHoveredCountryCode] = useState<string | null>('UKR');
-  const [pinnedCountryCode, setPinnedCountryCode] = useState<string | null>(null);
+  const [hoveredCountryCode, setHoveredCountryCode] = useState<string | null>(null);
+  const [pinnedCountryCode, setPinnedCountryCode] = useState<string | null>('UKR');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [activeTheater, setActiveTheater] = useState<string>('Global');
 
@@ -145,12 +150,18 @@ export function ChoroplethMapVisualizer() {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const zoomBehaviorRef = useRef<d3.ZoomBehavior<SVGSVGElement, unknown> | null>(null);
   const projectionRef = useRef<d3.GeoProjection | null>(null);
+  const pinnedCountryCodeRef = useRef<string | null>('UKR');
+
+  // Keep ref synchronized for D3 event closures
+  useEffect(() => {
+    pinnedCountryCodeRef.current = pinnedCountryCode;
+  }, [pinnedCountryCode]);
 
   const countries = metricsData.countries as Record<string, any>;
   const activeMetric = METRICS.find((m) => m.key === selectedMetricKey) || METRICS[0];
 
-  // Active inspected country (either pinned or hovered)
-  const activeCode = pinnedCountryCode || hoveredCountryCode || 'UKR';
+  // Active inspected country (prioritizes hovered while hovering, falls back to pinned, then defaults to Ukraine)
+  const activeCode = hoveredCountryCode || pinnedCountryCode || 'UKR';
   const activeCountry = countries[activeCode] || countries['UKR'];
 
   // Calculate domain min and max for the selected metric
@@ -190,7 +201,18 @@ export function ChoroplethMapVisualizer() {
     }
   };
 
-  // D3 Map Rendering
+  // Search filtered countries list
+  const filteredCountryOptions = useMemo(() => {
+    if (!searchQuery.trim()) return [];
+    const q = searchQuery.toLowerCase();
+    return Object.values(countries)
+      .filter((c: any) => c.name.toLowerCase().includes(q) || c.code.toLowerCase().includes(q))
+      .slice(0, 8);
+  }, [searchQuery, countries]);
+
+  // =========================================================================
+  // D3 BASE MAP RENDERING (RUNS ONCE ON MOUNT - NEVER RESETS ZOOM ON HOVER)
+  // =========================================================================
   useEffect(() => {
     if (!svgRef.current || !containerRef.current) return;
 
@@ -217,7 +239,7 @@ export function ChoroplethMapVisualizer() {
     // Zoom behavior with generous bounds so any theater region can be centered
     const zoom = d3
       .zoom<SVGSVGElement, unknown>()
-      .scaleExtent([1, 8])
+      .scaleExtent([1, 10])
       .translateExtent([
         [-width * 4, -height * 4],
         [width * 5, height * 5]
@@ -231,14 +253,14 @@ export function ChoroplethMapVisualizer() {
 
     // Ocean backdrop
     g.append('rect')
-      .attr('width', width * 3)
-      .attr('height', height * 3)
-      .attr('x', -width)
-      .attr('y', -height)
+      .attr('width', width * 5)
+      .attr('height', height * 5)
+      .attr('x', -width * 2)
+      .attr('y', -height * 2)
       .attr('fill', '#f8fafc') // Slate 50 clean ocean
       .attr('class', 'ocean-bg');
 
-    // Sphere outline / Graticule
+    // Graticule lines
     const graticule = d3.geoGraticule();
     g.append('path')
       .datum(graticule())
@@ -250,57 +272,83 @@ export function ChoroplethMapVisualizer() {
 
     // Render country features
     const features = (worldGeoData as any).features;
-
     const countriesGroup = g.append('g').attr('class', 'countries-layer');
 
-    const countryPaths = countriesGroup
+    countriesGroup
       .selectAll('path')
       .data(features)
       .enter()
       .append('path')
       .attr('d', (d: any) => pathGenerator(d))
       .attr('class', 'country-path cursor-pointer')
+      .attr('data-id', (d: any) => d.id)
       .attr('fill', (d: any) => {
         const cid = d.id;
         const cData = countries[cid];
         return getColor(cData ? cData[selectedMetricKey] : undefined);
       })
-      .attr('stroke', '#ffffff')
-      .attr('stroke-width', 0.8)
-      .style('transition', 'fill 0.2s ease, stroke 0.2s ease, stroke-width 0.2s ease')
-      .on('mouseenter', (event: any, d: any) => {
-        const cid = d.id;
-        setHoveredCountryCode(cid);
-        d3.select(event.currentTarget)
-          .attr('stroke', '#0f172a') // Charcoal highlight
-          .attr('stroke-width', 2)
-          .raise();
+      .attr('stroke', (d: any) => (d.id === pinnedCountryCodeRef.current ? '#4338ca' : '#ffffff'))
+      .attr('stroke-width', (d: any) => (d.id === pinnedCountryCodeRef.current ? 2.2 : 0.8))
+      .style('transition', 'fill 0.25s ease')
+      .on('mouseenter', (_: any, d: any) => {
+        setHoveredCountryCode(d.id);
       })
-      .on('mouseleave', (event: any, d: any) => {
-        const cid = d.id;
-        if (cid !== pinnedCountryCode) {
-          d3.select(event.currentTarget)
-            .attr('stroke', '#ffffff')
-            .attr('stroke-width', 0.8);
-        }
+      .on('mouseleave', () => {
+        setHoveredCountryCode(null);
       })
       .on('click', (_: any, d: any) => {
         const cid = d.id;
         setPinnedCountryCode((prev) => (prev === cid ? null : cid));
       });
+  }, []); // Mount only! NEVER wipe SVG on state updates
 
-    // Highlight currently pinned or hovered country
-    countryPaths.each(function (d: any) {
-      if (d.id === activeCode) {
-        d3.select(this)
-          .attr('stroke', '#1e1b4b') // Deep Indigo ring
-          .attr('stroke-width', 2.2)
-          .raise();
-      }
-    });
-  }, [selectedMetricKey, minVal, maxVal, countries, activeCode]);
+  // =========================================================================
+  // UPDATE COUNTRY FILLS WHEN METRIC CHANGES (WITHOUT RESETTING ZOOM)
+  // =========================================================================
+  useEffect(() => {
+    if (!svgRef.current) return;
+    d3.select(svgRef.current)
+      .selectAll<SVGPathElement, any>('.country-path')
+      .transition()
+      .duration(350)
+      .attr('fill', (d: any) => {
+        const cid = d.id;
+        const cData = countries[cid];
+        return getColor(cData ? cData[selectedMetricKey] : undefined);
+      });
+  }, [selectedMetricKey, minVal, maxVal]);
 
-  // Quick zoom to preset theater
+  // =========================================================================
+  // UPDATE STROKE HIGHLIGHTS (ACTIVE / PINNED) WITHOUT RESETTING ZOOM
+  // =========================================================================
+  useEffect(() => {
+    if (!svgRef.current) return;
+    const svg = d3.select(svgRef.current);
+
+    svg
+      .selectAll<SVGPathElement, any>('.country-path')
+      .attr('stroke', (d: any) => {
+        if (d.id === activeCode) return '#0f172a'; // Deep charcoal for active inspection
+        if (d.id === pinnedCountryCode) return '#4338ca'; // Indigo for pinned
+        return '#ffffff';
+      })
+      .attr('stroke-width', (d: any) => {
+        if (d.id === activeCode) return 2.4;
+        if (d.id === pinnedCountryCode) return 2.0;
+        return 0.8;
+      });
+
+    if (activeCode) {
+      svg
+        .selectAll<SVGPathElement, any>('.country-path')
+        .filter((d: any) => d.id === activeCode)
+        .raise();
+    }
+  }, [activeCode, pinnedCountryCode]);
+
+  // =========================================================================
+  // THEATER ZOOM PRESETS
+  // =========================================================================
   const handleZoomTheater = (preset: (typeof REGIONAL_VIEWS)[0]) => {
     if (!svgRef.current || !zoomBehaviorRef.current || !projectionRef.current) return;
     const svg = d3.select(svgRef.current);
@@ -336,6 +384,33 @@ export function ChoroplethMapVisualizer() {
       .duration(800)
       .ease(d3.easeCubicOut)
       .call(zoomBehaviorRef.current.transform, targetTransform);
+  };
+
+  // Smoothly center and zoom on a specific country
+  const centerOnCountry = (countryCode: string) => {
+    const feature = (worldGeoData as any).features.find((f: any) => f.id === countryCode);
+    if (!feature || !svgRef.current || !zoomBehaviorRef.current || !projectionRef.current) return;
+
+    const pathGen = d3.geoPath().projection(projectionRef.current);
+    const centroid = pathGen.centroid(feature);
+    if (!centroid || isNaN(centroid[0]) || isNaN(centroid[1])) return;
+
+    const width = svgRef.current.clientWidth || 920;
+    const height = Math.max(500, width * 0.52);
+
+    const targetTransform = d3.zoomIdentity
+      .translate(width / 2, height / 2)
+      .scale(3.2)
+      .translate(-centroid[0], -centroid[1]);
+
+    d3.select(svgRef.current)
+      .transition()
+      .duration(800)
+      .ease(d3.easeCubicOut)
+      .call(zoomBehaviorRef.current.transform, targetTransform);
+
+    setPinnedCountryCode(countryCode);
+    setActiveTheater('Custom');
   };
 
   const resetZoom = () => {
@@ -381,7 +456,7 @@ export function ChoroplethMapVisualizer() {
             Global Geographic Distribution & Security Metrics
           </h2>
           <p className="text-xs text-zinc-600 mt-1 max-w-2xl leading-relaxed">
-            Hover or click any nation to interrogate structural geopolitical indicators. Analyze how armed conflict intensity, military expenditure, democratic governance, and economic scale cluster across geographic regions.
+            Interrogate structural geopolitical indicators across sovereign states. Hover over any nation or theater to explore armed conflict intensity, military expenditure, democratic governance, and economic scale. Click any country to pin inspection.
           </p>
         </div>
 
@@ -427,9 +502,10 @@ export function ChoroplethMapVisualizer() {
         </div>
       </div>
 
-      {/* Map Theater Zoom Presets & Search */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-zinc-50 p-3 rounded-2xl border border-zinc-200 text-xs">
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
+      {/* Map Theater Zoom Presets & Search Bar */}
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 bg-zinc-50 p-3 rounded-2xl border border-zinc-200 text-xs">
+        {/* Regional Theaters */}
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 lg:pb-0">
           <span className="font-mono font-bold text-zinc-700 shrink-0 mr-1 flex items-center gap-1">
             <Compass className="w-3.5 h-3.5 text-indigo-600" />
             <span>Theaters:</span>
@@ -476,19 +552,80 @@ export function ChoroplethMapVisualizer() {
           </div>
         </div>
 
-        <div className="text-[11px] font-mono text-zinc-500 flex items-center gap-1.5 self-end sm:self-auto shrink-0">
-          <span>Scroll to Zoom • Drag to Pan • Click to Pin</span>
+        {/* Quick Country Search */}
+        <div className="relative shrink-0 w-full sm:w-64">
+          <div className="relative">
+            <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400" />
+            <input
+              type="text"
+              placeholder="Find any nation (e.g. China, Ukraine)..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-8 pr-3 py-1.5 rounded-xl bg-white border border-zinc-200 text-xs font-mono text-zinc-800 placeholder-zinc-400 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+            />
+          </div>
+
+          {filteredCountryOptions.length > 0 && (
+            <div className="absolute top-full right-0 left-0 mt-1 bg-white border border-zinc-200 rounded-xl shadow-xl z-50 overflow-hidden text-xs divide-y divide-zinc-100">
+              {filteredCountryOptions.map((c: any) => (
+                <button
+                  key={c.code}
+                  onClick={() => {
+                    centerOnCountry(c.code);
+                    setSearchQuery('');
+                  }}
+                  className="w-full px-3 py-2 text-left hover:bg-indigo-50 flex items-center justify-between transition-colors cursor-pointer"
+                >
+                  <span className="font-bold text-zinc-900">{c.name}</span>
+                  <span className="font-mono text-[10px] text-zinc-400">{c.code} · {c.strategicBloc}</span>
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
-      {/* Main Map Canvas Area with Interactive Overlay Panel */}
+      {/* Main Map Canvas Area (Completely Unobstructed — Asia is 100% visible) */}
       <div className="relative rounded-2xl border border-zinc-200 bg-[#f8fafc] overflow-hidden">
         <div ref={containerRef} className="w-full">
           <svg ref={svgRef} className="w-full h-auto min-h-[480px]" style={{ display: 'block' }} />
         </div>
 
+        {/* Top-Left Non-Intrusive Quick Status Pill (Never blocks Asia or any continent) */}
+        {activeCountry && (
+          <div className="absolute top-3 left-3 bg-white/95 backdrop-blur-md px-3.5 py-2 rounded-xl border border-zinc-200/90 shadow-md text-xs font-mono flex items-center gap-2 pointer-events-auto z-20">
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+            <span className="font-bold text-zinc-900 text-sm">{activeCountry.name}</span>
+            <span className="text-zinc-400 text-xs">({activeCountry.code})</span>
+            <span className="text-zinc-300">|</span>
+            <span className="text-indigo-700 font-extrabold text-xs">
+              {activeMetric.shortLabel}:{' '}
+              {activeCountry[selectedMetricKey] !== undefined
+                ? activeMetric.format(activeCountry[selectedMetricKey])
+                : 'N/A'}
+            </span>
+            {pinnedCountryCode === activeCountry.code ? (
+              <button
+                onClick={() => setPinnedCountryCode(null)}
+                className="ml-2 px-2 py-0.5 rounded-md text-[10px] bg-indigo-100 text-indigo-700 hover:bg-indigo-200 font-bold transition-colors cursor-pointer"
+                title="Click to unpin"
+              >
+                📌 Pinned (Unpin)
+              </button>
+            ) : (
+              <button
+                onClick={() => setPinnedCountryCode(activeCountry.code)}
+                className="ml-2 px-2 py-0.5 rounded-md text-[10px] bg-zinc-100 text-zinc-600 hover:bg-indigo-50 hover:text-indigo-700 font-medium transition-colors cursor-pointer"
+                title="Click to pin this nation"
+              >
+                Click to Pin
+              </button>
+            )}
+          </div>
+        )}
+
         {/* Legend Ribbon at Bottom Left */}
-        <div className="absolute bottom-4 left-4 bg-white/95 backdrop-blur-md p-3 rounded-xl border border-zinc-200 shadow-md text-xs font-mono space-y-1.5 max-w-[260px]">
+        <div className="absolute bottom-3 left-3 bg-white/95 backdrop-blur-md p-3 rounded-xl border border-zinc-200 shadow-md text-xs font-mono space-y-1.5 max-w-[260px] z-20">
           <div className="font-bold text-zinc-800 text-[11px] flex items-center justify-between">
             <span>{activeMetric.shortLabel}</span>
             <span className="text-zinc-500 text-[10px]">{activeMetric.unit}</span>
@@ -510,79 +647,178 @@ export function ChoroplethMapVisualizer() {
           </div>
         </div>
 
-        {/* Floating Country Intelligence HUD (Pinned or Hovered) */}
-        {activeCountry && (
-          <div className="absolute top-4 right-4 bg-zinc-950/95 backdrop-blur-md text-white p-4 rounded-2xl border border-zinc-800 shadow-2xl max-w-sm w-full space-y-3 z-30 transition-all">
-            <div className="flex items-start justify-between border-b border-zinc-800 pb-2.5">
-              <div>
-                <div className="flex items-center gap-2">
-                  <span className="text-[10px] font-mono font-bold text-amber-400 uppercase tracking-wider">
-                    {activeCountry.code}
-                  </span>
-                  <span className="text-zinc-500">•</span>
-                  <span className="text-[10px] font-mono text-zinc-400">{activeCountry.strategicBloc}</span>
-                </div>
-                <h3 className="text-lg font-black text-white leading-tight mt-0.5">
-                  {activeCountry.name}
-                </h3>
-              </div>
+        {/* Bottom Right Interaction Hint */}
+        <div className="absolute bottom-3 right-3 bg-white/80 backdrop-blur-xs px-2.5 py-1 rounded-lg border border-zinc-200 text-[10px] font-mono text-zinc-500 pointer-events-none hidden sm:block">
+          Scroll to Zoom • Drag to Pan • Click any Country
+        </div>
+      </div>
 
-              {pinnedCountryCode === activeCountry.code && (
-                <span className="px-2 py-0.5 rounded text-[9px] font-mono font-bold bg-indigo-500 text-white">
-                  PINNED
+      {/* =========================================================================
+          DEDICATED COUNTRY INTELLIGENCE PROFILE & DATA TABLE
+          Placed cleanly BELOW the map canvas so Asia is NEVER blocked!
+          ========================================================================= */}
+      {activeCountry && (
+        <div className="bg-zinc-950 text-white rounded-3xl p-6 border border-zinc-800 shadow-xl space-y-5 transition-all">
+          {/* Header Row */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-zinc-800 pb-4">
+            <div className="space-y-1">
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="text-xs font-mono font-bold text-amber-400 bg-amber-400/10 px-2.5 py-0.5 rounded-full border border-amber-400/20 uppercase tracking-wider">
+                  ISO: {activeCountry.code}
                 </span>
-              )}
+                <span className="text-zinc-500">•</span>
+                <span className="text-xs font-mono text-zinc-300">{activeCountry.strategicBloc}</span>
+                {pinnedCountryCode === activeCountry.code && (
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-indigo-600 text-white flex items-center gap-1">
+                    <Pin className="w-3 h-3" /> PINNED DOSSIER
+                  </span>
+                )}
+              </div>
+              <h3 className="text-2xl font-black text-white tracking-tight">
+                {activeCountry.name}
+              </h3>
             </div>
 
-            {/* Active Metric Large Highlight Display */}
-            <div className="p-3 bg-zinc-900 rounded-xl border border-zinc-800 flex items-center justify-between">
-              <div>
-                <div className="text-[10px] font-mono text-zinc-400 uppercase">
-                  {activeMetric.shortLabel}
-                </div>
-                <div className="text-xl font-black font-mono text-amber-400">
-                  {activeCountry[selectedMetricKey] !== undefined
-                    ? activeMetric.format(activeCountry[selectedMetricKey])
-                    : 'N/A'}
-                </div>
-              </div>
+            {/* Quick Actions */}
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => centerOnCountry(activeCountry.code)}
+                className="px-3.5 py-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs font-mono font-semibold transition-colors flex items-center gap-1.5 cursor-pointer border border-zinc-700"
+              >
+                <Crosshair className="w-3.5 h-3.5 text-indigo-400" />
+                <span>Center Map on Nation</span>
+              </button>
 
+              {pinnedCountryCode === activeCountry.code ? (
+                <button
+                  onClick={() => setPinnedCountryCode(null)}
+                  className="px-3.5 py-2 rounded-xl bg-indigo-600/30 hover:bg-indigo-600/50 text-indigo-300 text-xs font-mono font-semibold transition-colors flex items-center gap-1.5 cursor-pointer border border-indigo-500/40"
+                >
+                  <span>Clear Pin</span>
+                </button>
+              ) : (
+                <button
+                  onClick={() => setPinnedCountryCode(activeCountry.code)}
+                  className="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-mono font-semibold transition-colors flex items-center gap-1.5 cursor-pointer shadow-sm"
+                >
+                  <Pin className="w-3.5 h-3.5" />
+                  <span>Pin for Deep Dive</span>
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Active Metric Featured Banner */}
+          <div className="p-4 bg-zinc-900 rounded-2xl border border-zinc-800 flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div className="space-y-0.5">
+              <div className="text-xs font-mono text-zinc-400 uppercase tracking-wider flex items-center gap-1.5">
+                <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+                <span>Selected Metric Layer: {activeMetric.label}</span>
+              </div>
+              <div className="text-3xl font-black font-mono text-amber-400 tracking-tight">
+                {activeCountry[selectedMetricKey] !== undefined
+                  ? activeMetric.format(activeCountry[selectedMetricKey])
+                  : 'N/A'}
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <div className="text-right hidden sm:block">
+                <span className="text-[11px] font-mono text-zinc-400 block">Map Color Intensity</span>
+                <span className="text-xs font-mono font-bold text-zinc-200">
+                  {activeMetric.category.toUpperCase()}
+                </span>
+              </div>
               <div
-                className="w-4 h-4 rounded-full border border-white"
+                className="w-10 h-10 rounded-2xl border-2 border-white/80 shadow-md shrink-0"
                 style={{ backgroundColor: getColor(activeCountry[selectedMetricKey]) }}
               />
             </div>
+          </div>
 
-            {/* Core Comparative Profile Grid */}
-            <div className="grid grid-cols-2 gap-2 text-[11px] font-mono">
-              <div className="p-2 bg-zinc-900/80 rounded-lg border border-zinc-800/80">
-                <span className="text-zinc-400 block text-[9px]">GDP (NOMINAL)</span>
-                <span className="font-bold text-white">${activeCountry.gdpBillions}B</span>
-              </div>
-              <div className="p-2 bg-zinc-900/80 rounded-lg border border-zinc-800/80">
-                <span className="text-zinc-400 block text-[9px]">MILITARY (SIPRI)</span>
-                <span className="font-bold text-white">${activeCountry.militarySpendingBillions}B ({activeCountry.militaryShareGdp}%)</span>
-              </div>
-              <div className="p-2 bg-zinc-900/80 rounded-lg border border-zinc-800/80">
-                <span className="text-zinc-400 block text-[9px]">POLITY REGIME</span>
-                <span className={`font-bold ${activeCountry.polityScore >= 6 ? 'text-blue-400' : activeCountry.polityScore <= -6 ? 'text-rose-400' : 'text-amber-400'}`}>
-                  {activeCountry.polityScore > 0 ? `+${activeCountry.polityScore}` : activeCountry.polityScore}
-                </span>
-              </div>
-              <div className="p-2 bg-zinc-900/80 rounded-lg border border-zinc-800/80">
-                <span className="text-zinc-400 block text-[9px]">POPULATION</span>
-                <span className="font-bold text-white">{activeCountry.populationMillions}M</span>
-              </div>
+          {/* Core 6-Cell Empirical Metric Table */}
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 text-xs font-mono">
+            {/* 1. GDP */}
+            <div className="p-3 bg-zinc-900/90 rounded-xl border border-zinc-800/80 space-y-1">
+              <span className="text-zinc-400 block text-[10px] uppercase font-bold">GDP (Nominal)</span>
+              <span className="text-base font-extrabold text-white block">
+                ${activeCountry.gdpBillions >= 1000 ? (activeCountry.gdpBillions / 1000).toFixed(2) + 'T' : activeCountry.gdpBillions + 'B'}
+              </span>
+              <span className="text-[10px] text-zinc-500 block">
+                ${activeCountry.gdpPerCapita?.toLocaleString() ?? 'N/A'} per capita
+              </span>
             </div>
 
-            {/* Strategic Conflict & Alliance Note */}
-            <div className="text-[11px] text-zinc-300 bg-zinc-900/60 p-2.5 rounded-xl border border-zinc-800 leading-relaxed">
-              <strong className="text-amber-300 font-mono">Geopolitical Note: </strong>
-              <span>{activeCountry.primaryConflict}</span>
+            {/* 2. Military Expenditure */}
+            <div className="p-3 bg-zinc-900/90 rounded-xl border border-zinc-800/80 space-y-1">
+              <span className="text-zinc-400 block text-[10px] uppercase font-bold">Military (SIPRI)</span>
+              <span className="text-base font-extrabold text-white block">
+                ${activeCountry.militarySpendingBillions}B
+              </span>
+              <span className="text-[10px] text-zinc-500 block">
+                {activeCountry.militaryShareGdp}% of national GDP
+              </span>
+            </div>
+
+            {/* 3. Polity Score */}
+            <div className="p-3 bg-zinc-900/90 rounded-xl border border-zinc-800/80 space-y-1">
+              <span className="text-zinc-400 block text-[10px] uppercase font-bold">Polity5 Regime</span>
+              <span
+                className={`text-base font-extrabold block ${
+                  activeCountry.polityScore >= 6
+                    ? 'text-blue-400'
+                    : activeCountry.polityScore <= -6
+                    ? 'text-rose-400'
+                    : 'text-amber-400'
+                }`}
+              >
+                {activeCountry.polityScore > 0 ? `+${activeCountry.polityScore}` : activeCountry.polityScore}
+              </span>
+              <span className="text-[10px] text-zinc-500 block">
+                {activeCountry.polityScore >= 6 ? 'Democracy' : activeCountry.polityScore <= -6 ? 'Autocracy' : 'Anocracy'}
+              </span>
+            </div>
+
+            {/* 4. Population */}
+            <div className="p-3 bg-zinc-900/90 rounded-xl border border-zinc-800/80 space-y-1">
+              <span className="text-zinc-400 block text-[10px] uppercase font-bold">Population</span>
+              <span className="text-base font-extrabold text-white block">
+                {activeCountry.populationMillions}M
+              </span>
+              <span className="text-[10px] text-zinc-500 block">Sovereign Census</span>
+            </div>
+
+            {/* 5. Trade Openness */}
+            <div className="p-3 bg-zinc-900/90 rounded-xl border border-zinc-800/80 space-y-1">
+              <span className="text-zinc-400 block text-[10px] uppercase font-bold">Trade Openness</span>
+              <span className="text-base font-extrabold text-white block">
+                {activeCountry.tradeOpenness}%
+              </span>
+              <span className="text-[10px] text-zinc-500 block">Imports + Exports / GDP</span>
+            </div>
+
+            {/* 6. COW CINC */}
+            <div className="p-3 bg-zinc-900/90 rounded-xl border border-zinc-800/80 space-y-1">
+              <span className="text-zinc-400 block text-[10px] uppercase font-bold">COW CINC Score</span>
+              <span className="text-base font-extrabold text-purple-300 block">
+                {(activeCountry.cincScore * 100).toFixed(2)}%
+              </span>
+              <span className="text-[10px] text-zinc-500 block">Global Power Share</span>
             </div>
           </div>
-        )}
-      </div>
+
+          {/* Strategic Conflict & Alliance Dossier */}
+          <div className="p-4 rounded-2xl bg-zinc-900/70 border border-zinc-800/90 space-y-2">
+            <div className="flex items-center gap-2 text-xs font-mono font-bold text-amber-300">
+              <ShieldAlert className="w-4 h-4 text-amber-400" />
+              <span>Geopolitical Assessment & Conflict Profile</span>
+            </div>
+            <p className="text-xs text-zinc-300 leading-relaxed font-sans">
+              {activeCountry.primaryConflict}
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Analytical IR Concept Decoder */}
       <div className="p-4 rounded-2xl bg-indigo-50/80 border border-indigo-200 text-xs text-indigo-950 space-y-1.5">
