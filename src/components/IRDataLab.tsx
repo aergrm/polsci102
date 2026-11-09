@@ -30,14 +30,12 @@ import {
   Map
 } from 'lucide-react';
 
-import { GlobalGeopoliticalGlobe } from './GlobalGeopoliticalGlobe';
 import { PopulationPyramidVisualizer } from './datasets/PopulationPyramidVisualizer';
 import { ChoroplethMapVisualizer } from './datasets/ChoroplethMapVisualizer';
 
 export type DatasetSubTab =
   | 'choropleth'
   | 'demographics'
-  | 'globe'
   | 'mid'
   | 'alliances'
   | 'dcad'
@@ -71,15 +69,6 @@ export function IRDataLab() {
       tag: 'D3 Dynamic',
       badge: 'Demographic Transition',
       color: 'hover:border-blue-500/50'
-    },
-    {
-      id: 'globe',
-      title: '3D Geopolitical World Globe (1816–2024)',
-      shortTitle: '3D World Globe',
-      icon: Globe2,
-      tag: 'Interactive 3D',
-      badge: 'Borders & Treaties',
-      color: 'hover:border-indigo-500/50'
     },
     {
       id: 'mid',
@@ -278,7 +267,6 @@ export function IRDataLab() {
       <div>
         {activeSubTab === 'choropleth' && <ChoroplethMapVisualizer />}
         {activeSubTab === 'demographics' && <PopulationPyramidVisualizer />}
-        {activeSubTab === 'globe' && <GlobalGeopoliticalGlobe />}
         {activeSubTab === 'mid' && <MIDExplorer />}
         {activeSubTab === 'alliances' && <AlliancesExplorer />}
         {activeSubTab === 'dcad' && <DCADExplorer />}

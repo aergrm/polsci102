@@ -125,12 +125,13 @@ const METRICS: MetricConfig[] = [
 ];
 
 const REGIONAL_VIEWS = [
-  { name: 'World (Global View)', center: [0, 20], scale: 155 },
-  { name: 'Europe & Black Sea (Ukraine Theater)', center: [28, 52], scale: 460 },
-  { name: 'East Asia & Pacific (US-China / Taiwan)', center: [118, 30], scale: 380 },
-  { name: 'Middle East & Persian Gulf (Red Sea / Levant)', center: [45, 28], scale: 520 },
-  { name: 'Sub-Saharan Africa (Sahel & Great Lakes)', center: [20, 2], scale: 340 },
-  { name: 'Americas (USMCA & Latin America)', center: [-85, 12], scale: 240 },
+  { name: 'World (Global View)', shortName: 'Global', center: [0, 15], zoom: 1 },
+  { name: 'Europe & Black Sea (Ukraine Theater)', shortName: 'Europe & Ukraine', center: [28, 49], zoom: 3.2 },
+  { name: 'East Asia & Taiwan Strait', shortName: 'East Asia (Taiwan)', center: [118, 28], zoom: 2.8 },
+  { name: 'Middle East & Persian Gulf', shortName: 'Middle East & Gulf', center: [45, 27], zoom: 3.4 },
+  { name: 'South Asia (Indo-Pacific)', shortName: 'South Asia', center: [78, 20], zoom: 3.0 },
+  { name: 'Sub-Saharan Africa (Sahel / Horn)', shortName: 'Sub-Saharan Africa', center: [24, 6], zoom: 2.3 },
+  { name: 'Americas (USMCA & Latin America)', shortName: 'Americas', center: [-80, 12], zoom: 1.8 }
 ];
 
 export function ChoroplethMapVisualizer() {
@@ -138,10 +139,12 @@ export function ChoroplethMapVisualizer() {
   const [hoveredCountryCode, setHoveredCountryCode] = useState<string | null>('UKR');
   const [pinnedCountryCode, setPinnedCountryCode] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [activeTheater, setActiveTheater] = useState<string>('Global');
 
   const svgRef = useRef<SVGSVGElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const zoomBehaviorRef = useRef<d3.ZoomBehavior<SVGSVGElement, unknown> | null>(null);
+  const projectionRef = useRef<d3.GeoProjection | null>(null);
 
   const countries = metricsData.countries as Record<string, any>;
   const activeMetric = METRICS.find((m) => m.key === selectedMetricKey) || METRICS[0];
@@ -207,15 +210,17 @@ export function ChoroplethMapVisualizer() {
       .scale(width / 6.2)
       .translate([width / 2, height / 2 + 10]);
 
+    projectionRef.current = projection;
+
     const pathGenerator = d3.geoPath().projection(projection);
 
-    // Zoom behavior
+    // Zoom behavior with generous bounds so any theater region can be centered
     const zoom = d3
       .zoom<SVGSVGElement, unknown>()
       .scaleExtent([1, 8])
       .translateExtent([
-        [-width * 0.2, -height * 0.2],
-        [width * 1.2, height * 1.2]
+        [-width * 4, -height * 4],
+        [width * 5, height * 5]
       ])
       .on('zoom', (event) => {
         g.attr('transform', event.transform);
@@ -297,37 +302,66 @@ export function ChoroplethMapVisualizer() {
 
   // Quick zoom to preset theater
   const handleZoomTheater = (preset: (typeof REGIONAL_VIEWS)[0]) => {
-    if (!svgRef.current || !zoomBehaviorRef.current) return;
+    if (!svgRef.current || !zoomBehaviorRef.current || !projectionRef.current) return;
     const svg = d3.select(svgRef.current);
 
     const width = svgRef.current.clientWidth || 920;
     const height = Math.max(500, width * 0.52);
 
-    const projection = d3
-      .geoNaturalEarth1()
-      .scale(preset.scale * (width / 920))
-      .translate([width / 2, height / 2]);
+    setActiveTheater(preset.shortName);
 
-    const coords = projection(preset.center as [number, number]);
+    if (preset.zoom === 1) {
+      svg
+        .transition()
+        .duration(700)
+        .ease(d3.easeCubicOut)
+        .call(zoomBehaviorRef.current.transform, d3.zoomIdentity);
+      return;
+    }
+
+    const coords = projectionRef.current(preset.center as [number, number]);
     if (!coords) return;
+
+    const [px, py] = coords;
+    const k = preset.zoom;
+
+    // Apply exact D3 zoom transform: moves [px, py] to viewport center [width/2, height/2] at scale k
+    const targetTransform = d3.zoomIdentity
+      .translate(width / 2, height / 2)
+      .scale(k)
+      .translate(-px, -py);
 
     svg
       .transition()
-      .duration(750)
-      .call(
-        zoomBehaviorRef.current.transform,
-        d3.zoomIdentity
-          .translate(width / 2 - coords[0], height / 2 - coords[1])
-          .scale(preset.scale / 155)
-      );
+      .duration(800)
+      .ease(d3.easeCubicOut)
+      .call(zoomBehaviorRef.current.transform, targetTransform);
   };
 
   const resetZoom = () => {
     if (!svgRef.current || !zoomBehaviorRef.current) return;
+    setActiveTheater('Global');
     d3.select(svgRef.current)
       .transition()
       .duration(600)
+      .ease(d3.easeCubicOut)
       .call(zoomBehaviorRef.current.transform, d3.zoomIdentity);
+  };
+
+  const zoomIn = () => {
+    if (!svgRef.current || !zoomBehaviorRef.current) return;
+    d3.select(svgRef.current)
+      .transition()
+      .duration(300)
+      .call(zoomBehaviorRef.current.scaleBy, 1.35);
+  };
+
+  const zoomOut = () => {
+    if (!svgRef.current || !zoomBehaviorRef.current) return;
+    d3.select(svgRef.current)
+      .transition()
+      .duration(300)
+      .call(zoomBehaviorRef.current.scaleBy, 0.74);
   };
 
   return (
@@ -396,29 +430,53 @@ export function ChoroplethMapVisualizer() {
       {/* Map Theater Zoom Presets & Search */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-zinc-50 p-3 rounded-2xl border border-zinc-200 text-xs">
         <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
-          <span className="font-mono font-bold text-zinc-600 shrink-0 mr-1 flex items-center gap-1">
+          <span className="font-mono font-bold text-zinc-700 shrink-0 mr-1 flex items-center gap-1">
             <Compass className="w-3.5 h-3.5 text-indigo-600" />
             <span>Theaters:</span>
           </span>
-          {REGIONAL_VIEWS.map((reg) => (
+          {REGIONAL_VIEWS.map((reg) => {
+            const isActive = activeTheater === reg.shortName;
+            return (
+              <button
+                key={reg.name}
+                onClick={() => handleZoomTheater(reg)}
+                className={`px-3 py-1.5 rounded-xl font-mono text-xs font-semibold whitespace-nowrap transition-all shadow-2xs cursor-pointer border ${
+                  isActive
+                    ? 'bg-indigo-600 text-white border-indigo-600 shadow-sm'
+                    : 'bg-white border-zinc-200 text-zinc-700 hover:bg-zinc-100 hover:text-indigo-700'
+                }`}
+              >
+                {reg.shortName}
+              </button>
+            );
+          })}
+
+          <div className="flex items-center gap-1 ml-2 border-l border-zinc-200 pl-2 shrink-0">
             <button
-              key={reg.name}
-              onClick={() => handleZoomTheater(reg)}
-              className="px-2.5 py-1 rounded-lg font-mono text-xs font-medium whitespace-nowrap bg-white border border-zinc-200 text-zinc-700 hover:bg-zinc-100 hover:text-indigo-700 transition-colors shadow-2xs cursor-pointer"
+              onClick={zoomIn}
+              className="p-1.5 rounded-lg bg-white border border-zinc-200 hover:bg-zinc-100 text-zinc-700 transition-colors cursor-pointer"
+              title="Zoom In (+)"
             >
-              {reg.name.split(' (')[0]}
+              <ZoomIn className="w-3.5 h-3.5 text-zinc-600" />
             </button>
-          ))}
-          <button
-            onClick={resetZoom}
-            className="p-1.5 rounded-lg bg-zinc-200 hover:bg-zinc-300 text-zinc-700 transition-colors cursor-pointer shrink-0"
-            title="Reset to global view"
-          >
-            <RotateCcw className="w-3.5 h-3.5" />
-          </button>
+            <button
+              onClick={zoomOut}
+              className="p-1.5 rounded-lg bg-white border border-zinc-200 hover:bg-zinc-100 text-zinc-700 transition-colors cursor-pointer"
+              title="Zoom Out (-)"
+            >
+              <ZoomOut className="w-3.5 h-3.5 text-zinc-600" />
+            </button>
+            <button
+              onClick={resetZoom}
+              className="p-1.5 rounded-lg bg-zinc-200 hover:bg-zinc-300 text-zinc-700 transition-colors cursor-pointer"
+              title="Reset to global view"
+            >
+              <RotateCcw className="w-3.5 h-3.5 text-zinc-700" />
+            </button>
+          </div>
         </div>
 
-        <div className="text-[11px] font-mono text-zinc-500 flex items-center gap-1.5 self-end sm:self-auto">
+        <div className="text-[11px] font-mono text-zinc-500 flex items-center gap-1.5 self-end sm:self-auto shrink-0">
           <span>Scroll to Zoom • Drag to Pan • Click to Pin</span>
         </div>
       </div>
