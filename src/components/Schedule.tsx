@@ -32,10 +32,17 @@ export const WEEK_DETAILS: Record<number, {
     comparativeTakeaway: 'Distinguishing individual leadership psychology from domestic regime incentives and systemic distribution of power.'
   },
   2: {
-    paradigm: 'Historical Evolution of World Politics',
-    focusQuestion: 'How did the shocks of 1914, 1945, and 1991 reshape the institutions states inhabit today?',
-    keyConcepts: ['Concert of Europe', 'Imperial Dissolution', 'Containment (Kennan)', 'Cold War Bipolarity', 'Decolonization'],
-    comparativeTakeaway: 'The transition from multipolar balance of power to nuclear bipolar deterrence and post-Cold War order.'
+    paradigm: 'Historical Evolution of Modern World Politics (1815–2026)',
+    focusQuestion: 'How did the systemic ruptures of 1815, 1914, 1945, and 1991 forge the modern international order, and why do post-war institutional orders succeed or collapse?',
+    keyConcepts: [
+      'Concert of Europe (1815)',
+      'Versailles & Institutional Collapse (1919)',
+      'Bretton Woods & UN Strategic Restraint (1945)',
+      'Kennan Containment & Bipolarity (1947)',
+      'Post-Cold War Unipolarity (1991)',
+      'Multiplex Contestation (2008–Present)'
+    ],
+    comparativeTakeaway: 'Ikenberry vs. Kennan: Order-building after major wars succeeds when victors practice strategic restraint (1815, 1945), but collapses when punitive terms lack enforcement (1919 Versailles) or when rising challengers contest systemic rules.'
   },
   3: {
     paradigm: 'The Theoretical Triad (Realism vs Liberalism vs Constructivism)',

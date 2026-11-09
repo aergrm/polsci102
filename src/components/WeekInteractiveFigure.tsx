@@ -15,7 +15,16 @@ import {
   Building2,
   Target,
   Repeat,
-  GitFork
+  GitFork,
+  Calendar,
+  Clock,
+  Sparkles,
+  BookOpen,
+  AlertCircle,
+  ChevronRight,
+  Milestone,
+  CheckCircle2,
+  History
 } from 'lucide-react';
 import {
   cincCapabilitiesData,
@@ -33,9 +42,14 @@ interface InteractiveFigureProps {
 
 export function WeekInteractiveFigure({ week, title }: InteractiveFigureProps) {
   // Render authentic empirical interactive visualizers tailored directly to each week's scholarly topic
-  if (week === 1 || week === 2) {
-    // 200 Years of Systemic Hegemonic Cycles (COW CINC Great Power Shares)
-    return <CincPowerTransitionVisualizer week={week} />;
+  if (week === 1) {
+    // Week 1: Kenneth Waltz Three Images & J. David Singer Levels of Analysis Diagnostic
+    return <LevelsOfAnalysisVisualizer week={week} />;
+  }
+
+  if (week === 2) {
+    // Week 2: Historical Evolution of Modern World Politics & Order-Building (1815–2026)
+    return <HistoricalOrderEvolutionVisualizer week={week} />;
   }
 
   if (week === 3 || week === 9) {
@@ -83,12 +97,541 @@ export function WeekInteractiveFigure({ week, title }: InteractiveFigureProps) {
     return <SipriSpendingVisualizer week={week} />;
   }
 
-  // Fallback to CINC Power Transition
-  return <CincPowerTransitionVisualizer week={week} />;
+  // Fallback to Levels of Analysis
+  return <LevelsOfAnalysisVisualizer week={week} />;
 }
 
 // =========================================================================
-// 1. CINC POWER TRANSITION VISUALIZER (Weeks 1 & 2)
+// 1A. LEVELS OF ANALYSIS DIAGNOSTIC VISUALIZER (Week 1)
+// =========================================================================
+function LevelsOfAnalysisVisualizer({ week }: { week: number }) {
+  const [selectedCase, setSelectedCase] = useState<string>('ukraine');
+  const [activeFilter, setActiveFilter] = useState<'all' | 'systemic' | 'domestic' | 'individual'>('all');
+
+  const cases = [
+    {
+      id: 'ukraine',
+      name: '2022 Russia-Ukraine War',
+      date: '2022–Present',
+      systemic: {
+        title: 'Level 3: Systemic / Structural (Third Image)',
+        core: 'NATO Eastward Expansion & Anarchic Balancing: Realists (John Mearsheimer) argue that great powers react aggressively when adversarial military alliances expand directly to their borders. Under international anarchy, Russia perceived Ukraine\'s Western integration as an existential threat to its strategic depth.',
+        author: 'John Mearsheimer / Kenneth Waltz',
+        badge: 'Structural Realism',
+        color: 'border-indigo-500/40 bg-indigo-50/50 text-indigo-950',
+        badgeColor: 'bg-indigo-100 text-indigo-800'
+      },
+      domestic: {
+        title: 'Level 2: State / Domestic Regime (Second Image)',
+        core: 'Autocratic Regime Survival & Political Economy: Michael McFaul and Kathryn Stoner argue the invasion was driven by Russian domestic politics: a corrupt autocratic regime threatened by a flourishing democracy on its border that could inspire political opposition at home. Rentier energy revenues provided financial insulation.',
+        author: 'Michael McFaul / Kathryn Stoner',
+        badge: 'Regime Type & Internal Politics',
+        color: 'border-emerald-500/40 bg-emerald-50/50 text-emerald-950',
+        badgeColor: 'bg-emerald-100 text-emerald-800'
+      },
+      individual: {
+        title: 'Level 1: Individual / Psychology (First Image)',
+        core: 'Vladimir Putin\'s Historical Obsession & Echo Chamber: Decision-making was concentrated in an isolated leader obsessed with imperial Russian history (July 2021 essay denying Ukrainian statehood). COVID isolation and hardline siloviki advisers created severe confirmation bias and gross underestimation of Ukrainian resolve.',
+        author: 'Fiona Hill / Robert Jervis',
+        badge: 'Cognitive Bias & Leader Hubris',
+        color: 'border-amber-500/40 bg-amber-50/50 text-amber-950',
+        badgeColor: 'bg-amber-100 text-amber-800'
+      }
+    },
+    {
+      id: 'ww1',
+      name: '1914 Outbreak of World War I',
+      date: 'July 1914',
+      systemic: {
+        title: 'Level 3: Systemic / Structural (Third Image)',
+        core: 'Rigid Bipolar Alliances & Cult of the Offensive: The Triple Entente balanced against the Triple Alliance. In an offense-dominant military environment with rigid railway mobilization timetables, states believed striking first was critical, turning a localized Balkan crisis into systemic world war.',
+        author: 'Stephen Van Evera / Kenneth Waltz',
+        badge: 'Alliance Entrapment & Offense-Dominance',
+        color: 'border-indigo-500/40 bg-indigo-50/50 text-indigo-950',
+        badgeColor: 'bg-indigo-100 text-indigo-800'
+      },
+      domestic: {
+        title: 'Level 2: State / Domestic Regime (Second Image)',
+        core: 'The "Marriage of Iron and Rye": Fritz Fischer and Jack Snyder argue that Imperial Germany\'s fragile domestic coalition between conservative Prussian Junkers and heavy industrialists pushed for aggressive imperial expansion to suppress rising domestic socialist democracy.',
+        author: 'Fritz Fischer / Jack Snyder',
+        badge: 'Domestic Coalition Pressures',
+        color: 'border-emerald-500/40 bg-emerald-50/50 text-emerald-950',
+        badgeColor: 'bg-emerald-100 text-emerald-800'
+      },
+      individual: {
+        title: 'Level 1: Individual / Psychology (First Image)',
+        core: 'Royal Personalities & Monarchical Blunders: Kaiser Wilhelm II\'s erratic bluster, deep feelings of British slight, and personal "blank check" to Vienna; combined with Tsar Nicholas II\'s vacillating orders and the cognitive delusion that war would be brief.',
+        author: 'Holger Herwig / Robert Jervis',
+        badge: 'Monarchical Incompetence & Miscalculation',
+        color: 'border-amber-500/40 bg-amber-50/50 text-amber-950',
+        badgeColor: 'bg-amber-100 text-amber-800'
+      }
+    },
+    {
+      id: 'cuban',
+      name: '1962 Cuban Missile Crisis',
+      date: 'October 1962',
+      systemic: {
+        title: 'Level 3: Systemic / Structural (Third Image)',
+        core: 'Nuclear Bipolarity & Missile Gap Rebalancing: The US possessed a 17:1 strategic nuclear advantage and had placed Jupiter missiles in Turkey. Deploying Soviet R-12 missiles in Cuba was an attempt to rapidly rectify the strategic nuclear deficit and restore systemic deterrence.',
+        author: 'Structural Neorealism',
+        badge: 'Nuclear Bipolar Deterrence',
+        color: 'border-indigo-500/40 bg-indigo-50/50 text-indigo-950',
+        badgeColor: 'bg-indigo-100 text-indigo-800'
+      },
+      domestic: {
+        title: 'Level 2: State / Domestic Regime (Second Image)',
+        core: 'Bureaucratic Politics & Midterm Elections: Graham Allison\'s Models II & III: Soviet military services pushed for secret deployment without air cover; while JFK faced upcoming 1962 congressional elections where Republicans accused the administration of weakness on Cuba.',
+        author: 'Graham Allison / Morton Halperin',
+        badge: 'Bureaucratic Pulling & Hauling',
+        color: 'border-emerald-500/40 bg-emerald-50/50 text-emerald-950',
+        badgeColor: 'bg-emerald-100 text-emerald-800'
+      },
+      individual: {
+        title: 'Level 1: Individual / Psychology (First Image)',
+        core: 'JFK vs. Khrushchev Psychological Empathy: Kennedy learned from his Bay of Pigs failure and resisted military calls for immediate air strikes. Secret personal correspondence between JFK and Khrushchev established empathetic communication that permitted a face-saving diplomatic exit.',
+        author: 'Alexander George / Robert Jervis',
+        badge: 'Cognitive Learning & Crisis Empathy',
+        color: 'border-amber-500/40 bg-amber-50/50 text-amber-950',
+        badgeColor: 'bg-amber-100 text-amber-800'
+      }
+    },
+    {
+      id: 'iraq',
+      name: '2003 US Invasion of Iraq',
+      date: 'March 2003',
+      systemic: {
+        title: 'Level 3: Systemic / Structural (Third Image)',
+        core: 'Unipolar Permissiveness: Following the collapse of the Soviet Union, the US enjoyed uncontested global hegemony. In a unipolar system, the hegemon faces no external balancing coalition to deter it from executing preventive military interventions.',
+        author: 'Nuno Monteiro / Christopher Layne',
+        badge: 'Unipolar Hegemony',
+        color: 'border-indigo-500/40 bg-indigo-50/50 text-indigo-950',
+        badgeColor: 'bg-indigo-100 text-indigo-800'
+      },
+      domestic: {
+        title: 'Level 2: State / Domestic Regime (Second Image)',
+        core: 'Ideological Think-Tanks & Post-9/11 Politics: Project for the New American Century (PNAC) neoconservative ideology captured the Pentagon (Rumsfeld, Wolfowitz). Post-9/11 public fear produced a massive rally-around-the-flag effect and bipartisan congressional authorization.',
+        author: 'Mearsheimer & Walt / Chaim Kaufmann',
+        badge: 'Ideological Capture & Media Framing',
+        color: 'border-emerald-500/40 bg-emerald-50/50 text-emerald-950',
+        badgeColor: 'bg-emerald-100 text-emerald-800'
+      },
+      individual: {
+        title: 'Level 1: Individual / Psychology (First Image)',
+        core: 'George W. Bush\'s Moralistic Paradigm: Bush viewed international politics in stark good-vs-evil binaries ("Axis of Evil"), suffered confirmation bias regarding unverified Iraqi WMD intelligence, and sought to resolve unfinished family business from the 1991 Gulf War.',
+        author: 'James Dyson / Daniel Kahneman',
+        badge: 'Moralist Heuristics & Motivated Bias',
+        color: 'border-amber-500/40 bg-amber-50/50 text-amber-950',
+        badgeColor: 'bg-amber-100 text-amber-800'
+      }
+    }
+  ];
+
+  const active = cases.find(c => c.id === selectedCase) || cases[0];
+
+  return (
+    <div className="bg-white rounded-2xl p-5 border border-zinc-200 shadow-xs space-y-5">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-zinc-100 pb-3">
+        <div>
+          <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-indigo-600">
+            Kenneth Waltz (1959) & J. David Singer (1961) · Levels of Analysis
+          </span>
+          <h3 className="text-base font-bold text-zinc-900 mt-0.5">
+            The Three Images of International Relations: Diagnostic Framework
+          </h3>
+          <p className="text-xs text-zinc-600 mt-1">
+            Toggle historical crises to see how causal explanations transform between systemic anarchy, state regime dynamics, and individual psychology.
+          </p>
+        </div>
+      </div>
+
+      {/* Case Selector Pills */}
+      <div className="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs">
+        <span className="text-xs font-mono font-bold text-zinc-500 mr-1 shrink-0">Case Study:</span>
+        {cases.map(c => (
+          <button
+            key={c.id}
+            onClick={() => setSelectedCase(c.id)}
+            className={`px-3 py-1.5 rounded-xl font-mono text-xs font-semibold whitespace-nowrap transition-all border ${
+              selectedCase === c.id
+                ? 'bg-indigo-600 text-white border-indigo-600 shadow-xs'
+                : 'bg-zinc-50 border-zinc-200 text-zinc-700 hover:bg-zinc-100'
+            }`}
+          >
+            {c.name}
+          </button>
+        ))}
+      </div>
+
+      {/* Level Filter Buttons */}
+      <div className="flex items-center gap-1 bg-zinc-100 p-1 rounded-xl text-xs font-mono w-fit">
+        <button
+          onClick={() => setActiveFilter('all')}
+          className={`px-2.5 py-1 rounded-lg transition-colors ${
+            activeFilter === 'all' ? 'bg-white text-zinc-900 font-bold shadow-2xs' : 'text-zinc-600 hover:text-zinc-900'
+          }`}
+        >
+          All 3 Levels (Comparative)
+        </button>
+        <button
+          onClick={() => setActiveFilter('systemic')}
+          className={`px-2.5 py-1 rounded-lg transition-colors ${
+            activeFilter === 'systemic' ? 'bg-indigo-600 text-white font-bold' : 'text-zinc-600 hover:text-zinc-900'
+          }`}
+        >
+          Level 3: Systemic
+        </button>
+        <button
+          onClick={() => setActiveFilter('domestic')}
+          className={`px-2.5 py-1 rounded-lg transition-colors ${
+            activeFilter === 'domestic' ? 'bg-emerald-600 text-white font-bold' : 'text-zinc-600 hover:text-zinc-900'
+          }`}
+        >
+          Level 2: Domestic
+        </button>
+        <button
+          onClick={() => setActiveFilter('individual')}
+          className={`px-2.5 py-1 rounded-lg transition-colors ${
+            activeFilter === 'individual' ? 'bg-amber-600 text-white font-bold' : 'text-zinc-600 hover:text-zinc-900'
+          }`}
+        >
+          Level 1: Individual
+        </button>
+      </div>
+
+      {/* The 3 Image Diagnostic Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pt-1">
+        {(activeFilter === 'all' || activeFilter === 'systemic') && (
+          <div className="p-4 rounded-2xl border border-indigo-200 bg-indigo-50/60 space-y-2 flex flex-col justify-between">
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-800 border border-indigo-200">
+                  {active.systemic.badge}
+                </span>
+                <Globe2 className="w-4 h-4 text-indigo-600" />
+              </div>
+              <h4 className="text-xs font-bold text-indigo-950 font-mono uppercase tracking-wide">
+                {active.systemic.title}
+              </h4>
+              <p className="text-xs text-zinc-700 leading-relaxed">
+                {active.systemic.core}
+              </p>
+            </div>
+            <div className="pt-3 border-t border-indigo-100/80 text-[11px] font-mono text-indigo-700 font-semibold">
+              Scholarly Lead: {active.systemic.author}
+            </div>
+          </div>
+        )}
+
+        {(activeFilter === 'all' || activeFilter === 'domestic') && (
+          <div className="p-4 rounded-2xl border border-emerald-200 bg-emerald-50/60 space-y-2 flex flex-col justify-between">
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200">
+                  {active.domestic.badge}
+                </span>
+                <Building2 className="w-4 h-4 text-emerald-600" />
+              </div>
+              <h4 className="text-xs font-bold text-emerald-950 font-mono uppercase tracking-wide">
+                {active.domestic.title}
+              </h4>
+              <p className="text-xs text-zinc-700 leading-relaxed">
+                {active.domestic.core}
+              </p>
+            </div>
+            <div className="pt-3 border-t border-emerald-100/80 text-[11px] font-mono text-emerald-700 font-semibold">
+              Scholarly Lead: {active.domestic.author}
+            </div>
+          </div>
+        )}
+
+        {(activeFilter === 'all' || activeFilter === 'individual') && (
+          <div className="p-4 rounded-2xl border border-amber-200 bg-amber-50/60 space-y-2 flex flex-col justify-between">
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-200">
+                  {active.individual.badge}
+                </span>
+                <Users className="w-4 h-4 text-amber-600" />
+              </div>
+              <h4 className="text-xs font-bold text-amber-950 font-mono uppercase tracking-wide">
+                {active.individual.title}
+              </h4>
+              <p className="text-xs text-zinc-700 leading-relaxed">
+                {active.individual.core}
+              </p>
+            </div>
+            <div className="pt-3 border-t border-amber-100/80 text-[11px] font-mono text-amber-700 font-semibold">
+              Scholarly Lead: {active.individual.author}
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Synthesis Takeaway Card */}
+      <div className="p-4 rounded-xl bg-zinc-50 border border-zinc-200 text-xs text-zinc-700 space-y-1.5 leading-relaxed">
+        <div className="font-bold flex items-center gap-1.5 text-zinc-900 font-mono">
+          <Info className="w-4 h-4 text-indigo-600" />
+          <span>Singer (1961) Methodological Rule:</span>
+        </div>
+        <p>
+          Never commit the fallacy of single-level reductionism. <strong>Systemic constraints</strong> establish what states <em>can and cannot do</em> (the menu of strategic choices under anarchy); <strong>domestic regime dynamics</strong> shape which domestic interest coalition captures policy; and <strong>individual psychology</strong> explains the precise timing, tactical risk, and cognitive miscalculations of the actual human decision-maker.
+        </p>
+      </div>
+    </div>
+  );
+}
+
+// =========================================================================
+// 1B. HISTORICAL EVOLUTION OF WORLD POLITICS & ORDER-BUILDING (Week 2)
+// =========================================================================
+function HistoricalOrderEvolutionVisualizer({ week }: { week: number }) {
+  const [selectedEpochIdx, setSelectedEpochIdx] = useState<number>(2); // Default to Cold War 1945–1989
+
+  const epochs = [
+    {
+      id: 'concert',
+      years: '1815–1914',
+      title: 'Concert of Europe & Pax Britannica',
+      polarity: 'Multipolar Balance of Power (5–6 Great Powers)',
+      orderType: 'Concert of Vienna: Balance of Power Equilibrium',
+      hegemon: 'Great Britain (Naval Supremacy & Sterling Hegemony)',
+      flashpoints: 'Crimean War (1853), Franco-Prussian War (1870), Scramble for Africa',
+      fatalFlaw: 'Rising industrial/demographic might of unified Germany (1871) upset the balance, leading to rigid bipolar alliances (Triple Entente vs. Triple Alliance) and the 1914 catastrophe.',
+      ikenberryThesis: 'Ikenberry (After Victory): 1815 succeeded because Castlereagh and Metternich practiced strategic restraint—integrating defeated France into the diplomatic concert rather than crushing it, preventing revenge revisionism for nearly a century.',
+      kennanLesson: 'Diplomatic realism: Peace depends on maintaining flexible equilibrium where no single power can dominate the European heartland.',
+      milestones: [
+        { year: '1815', event: 'Congress of Vienna codifies European diplomatic balance after Napoleon' },
+        { year: '1853', event: 'Crimean War fractures the conservative Holy Alliance' },
+        { year: '1871', event: 'Unification of Germany creates an industrial titan at the center of Europe' },
+        { year: '1884', event: 'Berlin Conference regulates European colonization of Africa' }
+      ]
+    },
+    {
+      id: 'interwar',
+      years: '1914–1945',
+      title: 'World Wars & The Interwar Institutional Breakdown',
+      polarity: 'Fragmented Multipolarity & Aggressive Revisionist Blocs',
+      orderType: 'Failed Collective Security (Versailles Treaty & League of Nations)',
+      hegemon: 'None (US isolationism; British and French economic exhaustion)',
+      flashpoints: 'Japanese invasion of Manchuria (1931), Italian invasion of Abyssinia (1935), Munich Crisis (1938)',
+      fatalFlaw: 'Versailles imposed punitive economic and territorial terms on Germany without providing enforcement mechanisms. The US Senate rejected League membership, and the 1929 Great Depression triggered autarkic tariff wars (Smoot-Hawley).',
+      ikenberryThesis: 'Ikenberry: Versailles was a catastrophic order-building failure. The victors attempted a punitive order without either military enforcement or institutional buy-in, creating intense revisionist grievances in Germany and Japan.',
+      kennanLesson: 'Paper treaties without hard power enforcement fail. Disarmament pacts (Kellogg-Briand Pact 1928) cannot prevent totalitarian aggression.',
+      milestones: [
+        { year: '1914', event: 'Assassination of Archduke Franz Ferdinand triggers World War I' },
+        { year: '1919', event: 'Treaty of Versailles creates the League of Nations' },
+        { year: '1929', event: 'Wall Street Crash triggers the Great Depression and competitive protectionism' },
+        { year: '1939', event: 'Molotov-Ribbentrop Pact and German invasion of Poland ignite WWII' }
+      ]
+    },
+    {
+      id: 'coldwar',
+      years: '1945–1989',
+      title: 'Cold War Bipolarity, Containment & Nuclear Peace',
+      polarity: 'Rigid Bipolarity (US vs. Soviet Union)',
+      orderType: 'Dual Orders: Western Multilateralism vs. Soviet Comecon/Warsaw Pact',
+      hegemon: 'Dual Superpowers (United States & USSR Nuclear Duopoly)',
+      flashpoints: 'Berlin Blockade (1948), Korean War (1950), Cuban Missile Crisis (1962), Vietnam War (1965)',
+      fatalFlaw: 'Brinkmanship and devastating proxy conflicts in the Global South; nuclear arms racing; economic exhaustion of the command economy.',
+      ikenberryThesis: 'Ikenberry: In 1945, the US pioneered liberal hegemonic order-building: using its massive 1945 power advantage (50% of world GDP) to bind itself through NATO, Bretton Woods, and the Marshall Plan, reassuring European partners through multilateral institutions.',
+      kennanLesson: 'George F. Kennan (1947 "X Article"): Soviet expansionism is driven by domestic totalitarian insecurity. Kennan recommended patient, firm, and vigilant Containment at key geopolitical points, predicting the internal contradictions of communism would eventually cause collapse without World War III.',
+      milestones: [
+        { year: '1944', event: 'Bretton Woods conference founds IMF and the World Bank' },
+        { year: '1945', event: 'UN Charter signed in San Francisco; US drops atomic bombs on Hiroshima/Nagasaki' },
+        { year: '1947', event: 'Truman Doctrine & George Kennan\'s "Sources of Soviet Conduct"' },
+        { year: '1949', event: 'NATO formed; Soviet Union tests atomic bomb; PRC established under Mao' },
+        { year: '1955', event: 'Bandung Conference launches Non-Aligned Movement (Decolonization)' },
+        { year: '1962', event: 'Cuban Missile Crisis reaches nuclear brink, prompting arms control treaties' }
+      ]
+    },
+    {
+      id: 'unipolar',
+      years: '1989–2008',
+      title: 'The Post-Cold War "Unipolar Moment" & Globalization',
+      polarity: 'Unipolar Hegemony (United States as Sole Superpower)',
+      orderType: 'Globalized Rules-Based Liberal Order (Washington Consensus)',
+      hegemon: 'United States ("The Indispensable Nation")',
+      flashpoints: 'Balkans Wars & Srebrenica (1990s), 1991 Gulf War, 9/11 Attacks, 2003 Iraq Invasion',
+      fatalFlaw: 'Imperial overstretch in the Middle East; Russian resentment over eastward NATO enlargement; Chinese transition into mercantilist manufacturing powerhouse.',
+      ikenberryThesis: 'Ikenberry: Following the 1991 Soviet collapse, the US expanded the 1945 Western order to become global—integrating former Soviet states, launching the WTO (1995), and welcoming China (2001) in the belief that trade would democratize competitors.',
+      kennanLesson: 'In 1997, Kennan warned that expanding NATO eastward to Russia\'s borders would be "the most fateful error of American policy in the entire post-Cold War era," predicting it would inflame Russian nationalist revanchism.',
+      milestones: [
+        { year: '1989', event: 'Fall of the Berlin Wall and collapse of communist satellite regimes' },
+        { year: '1991', event: 'Dissolution of the Soviet Union into 15 independent republics; Desert Storm' },
+        { year: '1995', event: 'World Trade Organization (WTO) launched to enforce multilateral free trade' },
+        { year: '2001', event: '9/11 Al-Qaeda attacks trigger global War on Terror; China joins the WTO' },
+        { year: '2003', event: 'US invasion of Iraq without UN Security Council authorization' }
+      ]
+    },
+    {
+      id: 'multiplex',
+      years: '2008–2026',
+      title: 'Contested Order & Multiplex Great Power Rivalry',
+      polarity: 'Asymmetric Multipolarity / US-China Dual Primacy with Middle Power Agency',
+      orderType: 'Fragmented Multilateralism & Competing Minilateral Coalitions (Quad, BRICS+, AUKUS)',
+      hegemon: 'Contested (US hegemonic leadership contested by China & Russia)',
+      flashpoints: 'Russian invasions of Ukraine (2014 & 2022), Taiwan Strait, South China Sea, Middle East warfare',
+      fatalFlaw: 'Paralysis of the UN Security Council through reciprocal vetoes; weaponized interdependence (SWIFT, export controls); retreat from free trade into economic nationalism.',
+      ikenberryThesis: 'Ikenberry & Acharya: The world is now a "Multiplex Cinema"—multiple movies playing simultaneously. The US remains the dominant military power, but can no longer dictate global rules alone. Middle powers (India, Turkey, Brazil, Saudi Arabia) practice transactional hedging.',
+      kennanLesson: 'Balance of power returns: Strategic patience and clear deterrence lines are required to manage competitive coexistence without spiraling into direct great-power warfare.',
+      milestones: [
+        { year: '2008', event: 'Global Financial Crisis undermines Western economic credibility' },
+        { year: '2014', event: 'Russian annexation of Crimea fractures European post-Cold War borders' },
+        { year: '2018', event: 'US-China trade and technology competition escalates into strategic rivalry' },
+        { year: '2022', event: 'Full-scale Russian invasion of Ukraine; NATO expands to Sweden and Finland' },
+        { year: '2024+', event: 'Expansion of BRICS+ alliance and strategic rivalry in AI and semiconductors' }
+      ]
+    }
+  ];
+
+  const activeEpoch = epochs[selectedEpochIdx];
+
+  return (
+    <div className="bg-white rounded-2xl p-5 border border-zinc-200 shadow-xs space-y-5">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-zinc-100 pb-3">
+        <div>
+          <div className="flex items-center gap-2 mb-1 flex-wrap">
+            <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-purple-600 bg-purple-50 px-2 py-0.5 rounded border border-purple-200">
+              Week 2 Empirical Timeline & Order-Building
+            </span>
+            <span className="text-xs text-zinc-500 font-mono">1815–2026 Historical Systems</span>
+          </div>
+          <h3 className="text-base font-bold text-zinc-900 mt-0.5">
+            Historical Evolution of Modern World Politics: 1914, 1945, 1991 & 2026
+          </h3>
+          <p className="text-xs text-zinc-600 mt-1">
+            Examine how systemic war and collapse reshape polarity, international law, and institutional order-building (Ikenberry & Kennan).
+          </p>
+        </div>
+      </div>
+
+      {/* Epoch Navigation Switcher */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
+        {epochs.map((ep, idx) => {
+          const isSelected = selectedEpochIdx === idx;
+          return (
+            <button
+              key={ep.id}
+              onClick={() => setSelectedEpochIdx(idx)}
+              className={`p-3 rounded-xl text-left transition-all border flex flex-col justify-between gap-2 cursor-pointer ${
+                isSelected
+                  ? 'bg-purple-900 text-white border-purple-900 shadow-sm font-bold'
+                  : 'bg-zinc-50 border-zinc-200 text-zinc-700 hover:bg-zinc-100'
+              }`}
+            >
+              <div className="flex items-center justify-between">
+                <span className={`text-[10px] font-mono font-bold px-1.5 py-0.5 rounded ${
+                  isSelected ? 'bg-purple-700 text-purple-100' : 'bg-zinc-200 text-zinc-700'
+                }`}>
+                  {ep.years}
+                </span>
+                <Clock className={`w-3.5 h-3.5 ${isSelected ? 'text-purple-300' : 'text-zinc-400'}`} />
+              </div>
+              <div className="text-xs font-bold leading-tight line-clamp-2">
+                {ep.title.split(' & ')[0]}
+              </div>
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Selected Epoch Deep Dive Overview */}
+      <div className="bg-gradient-to-r from-purple-950/80 via-slate-900 to-indigo-950/80 text-white rounded-2xl p-5 border border-purple-800/40 space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-white/10 pb-3">
+          <div>
+            <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-purple-300">
+              Active Historical Epoch
+            </span>
+            <h4 className="text-xl font-black text-white mt-0.5">
+              {activeEpoch.title} ({activeEpoch.years})
+            </h4>
+          </div>
+          <span className="px-3 py-1 rounded-full text-xs font-mono font-bold bg-purple-500/30 text-purple-200 border border-purple-400/30 self-start sm:self-auto">
+            {activeEpoch.polarity}
+          </span>
+        </div>
+
+        {/* 4 Core Systemic Parameters */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+          <div className="bg-white/5 p-3 rounded-xl border border-white/10">
+            <span className="text-zinc-400 font-mono text-[10px] block uppercase">Systemic Polarity</span>
+            <span className="font-bold text-purple-200 mt-1 block">{activeEpoch.polarity}</span>
+          </div>
+          <div className="bg-white/5 p-3 rounded-xl border border-white/10">
+            <span className="text-zinc-400 font-mono text-[10px] block uppercase">Order Architecture</span>
+            <span className="font-bold text-white mt-1 block">{activeEpoch.orderType}</span>
+          </div>
+          <div className="bg-white/5 p-3 rounded-xl border border-white/10">
+            <span className="text-zinc-400 font-mono text-[10px] block uppercase">Hegemonic Core</span>
+            <span className="font-bold text-amber-300 mt-1 block">{activeEpoch.hegemon}</span>
+          </div>
+          <div className="bg-white/5 p-3 rounded-xl border border-white/10">
+            <span className="text-zinc-400 font-mono text-[10px] block uppercase">Critical Flashpoints</span>
+            <span className="font-bold text-rose-300 mt-1 block truncate" title={activeEpoch.flashpoints}>
+              {activeEpoch.flashpoints}
+            </span>
+          </div>
+        </div>
+
+        {/* The Fatal Flaw / Breakdown Mechanism */}
+        <div className="p-3 bg-red-950/40 rounded-xl border border-red-900/50 text-xs text-red-200 space-y-1">
+          <strong className="text-red-400 font-mono text-[11px] uppercase flex items-center gap-1.5">
+            <AlertCircle className="w-3.5 h-3.5 text-red-400" />
+            <span>Systemic Crisis & Breakdown Factor:</span>
+          </strong>
+          <p className="text-zinc-300 leading-relaxed">{activeEpoch.fatalFlaw}</p>
+        </div>
+      </div>
+
+      {/* IR Theory Context: Ikenberry vs Kennan */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Ikenberry Order-Building */}
+        <div className="p-4 rounded-2xl bg-indigo-50/70 border border-indigo-200 space-y-2">
+          <div className="font-mono text-xs font-bold text-indigo-900 flex items-center gap-1.5">
+            <BookOpen className="w-4 h-4 text-indigo-600" />
+            <span>John Ikenberry: Order After Victory (2001)</span>
+          </div>
+          <p className="text-xs text-zinc-700 leading-relaxed">
+            {activeEpoch.ikenberryThesis}
+          </p>
+        </div>
+
+        {/* George Kennan Containment */}
+        <div className="p-4 rounded-2xl bg-amber-50/70 border border-amber-200 space-y-2">
+          <div className="font-mono text-xs font-bold text-amber-900 flex items-center gap-1.5">
+            <Shield className="w-4 h-4 text-amber-600" />
+            <span>George F. Kennan: Realist Statecraft & Balance</span>
+          </div>
+          <p className="text-xs text-zinc-700 leading-relaxed">
+            {activeEpoch.kennanLesson}
+          </p>
+        </div>
+      </div>
+
+      {/* Chronological Milestones of This Epoch */}
+      <div className="space-y-2 pt-1">
+        <h4 className="text-xs font-mono font-bold text-zinc-700 uppercase tracking-wider flex items-center gap-1.5">
+          <Milestone className="w-3.5 h-3.5 text-purple-600" />
+          <span>Epoch Watershed Milestones:</span>
+        </h4>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
+          {activeEpoch.milestones.map((m) => (
+            <div key={m.year + m.event} className="p-3 rounded-xl bg-zinc-50 border border-zinc-200 text-xs space-y-1">
+              <span className="font-mono font-black text-purple-700 text-sm">{m.year}</span>
+              <p className="text-zinc-700 text-[11px] leading-snug">{m.event}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// =========================================================================
+// 1C. CINC POWER TRANSITION VISUALIZER (Supplementary Tool)
 // =========================================================================
 function CincPowerTransitionVisualizer({ week }: { week: number }) {
   const [selectedYear, setSelectedYear] = useState<number>(1945);
