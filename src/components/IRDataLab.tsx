@@ -27,7 +27,10 @@ import {
   Sparkles
 } from 'lucide-react';
 
+import { GlobalGeopoliticalGlobe } from './GlobalGeopoliticalGlobe';
+
 export type DatasetSubTab =
+  | 'globe'
   | 'mid'
   | 'alliances'
   | 'dcad'
@@ -44,6 +47,15 @@ export function IRDataLab() {
   const [showDownloads, setShowDownloads] = useState(false);
 
   const datasetTabs = [
+    {
+      id: 'globe',
+      title: '3D Geopolitical World Globe (1816–2024)',
+      shortTitle: '3D World Globe',
+      icon: Globe2,
+      tag: 'Interactive 3D',
+      badge: 'Borders & Treaties',
+      color: 'hover:border-indigo-500/50'
+    },
     {
       id: 'mid',
       title: 'Correlates of War (COW): MID 5.0',
@@ -239,6 +251,7 @@ export function IRDataLab() {
 
       {/* Active Dataset Component */}
       <div>
+        {activeSubTab === 'globe' && <GlobalGeopoliticalGlobe />}
         {activeSubTab === 'mid' && <MIDExplorer />}
         {activeSubTab === 'alliances' && <AlliancesExplorer />}
         {activeSubTab === 'dcad' && <DCADExplorer />}

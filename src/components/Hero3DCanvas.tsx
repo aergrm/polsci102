@@ -1,5 +1,7 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
+import { Globe, Compass, Shield, Database, BookOpen, Layers } from 'lucide-react';
+import bordersData from '../data/worldBordersClean.json';
 
 interface Hero3DCanvasProps {
   institution: string;
@@ -9,23 +11,34 @@ interface Hero3DCanvasProps {
   format: string;
 }
 
-// Major IR Strategic Hubs (Lat, Lng, Name)
-const GLOBAL_HUBS = [
-  { name: 'Washington, D.C.', lat: 38.9, lng: -77.0, type: 'hegemon' },
-  { name: 'Geneva / UN', lat: 46.2, lng: 6.1, type: 'institution' },
-  { name: 'Brussels / EU & NATO', lat: 50.8, lng: 4.3, type: 'institution' },
-  { name: 'Beijing', lat: 39.9, lng: 116.4, type: 'hegemon' },
-  { name: 'Tokyo', lat: 35.6, lng: 139.6, type: 'trade' },
-  { name: 'London', lat: 51.5, lng: -0.1, type: 'trade' },
-  { name: 'New York / UN HQ', lat: 40.7, lng: -74.0, type: 'institution' },
-  { name: 'Singapore', lat: 1.3, lng: 103.8, type: 'trade' },
-  { name: 'Addis Ababa / AU', lat: 9.0, lng: 38.7, type: 'institution' },
-  { name: 'Brasília', lat: -15.8, lng: -47.9, type: 'trade' },
-  { name: 'Sydney', lat: -33.8, lng: 151.2, type: 'trade' },
-  { name: 'New Delhi', lat: 28.6, lng: 77.2, type: 'trade' },
+// Strategic IR capitals & diplomatic nodes
+const STRATEGIC_NODES = [
+  { name: 'Washington, D.C.', lat: 38.9, lng: -77.0, code: 'USA' },
+  { name: 'London', lat: 51.5, lng: -0.1, code: 'GBR' },
+  { name: 'Paris', lat: 48.8, lng: 2.3, code: 'FRN' },
+  { name: 'Berlin', lat: 52.5, lng: 13.4, code: 'GMY' },
+  { name: 'Moscow', lat: 55.7, lng: 37.6, code: 'RUS' },
+  { name: 'Beijing', lat: 39.9, lng: 116.4, code: 'CHN' },
+  { name: 'Tokyo', lat: 35.6, lng: 139.6, code: 'JPN' },
+  { name: 'New Delhi', lat: 28.6, lng: 77.2, code: 'IND' },
+  { name: 'Geneva', lat: 46.2, lng: 6.1, code: 'SWZ' },
+  { name: 'Cairo', lat: 30.0, lng: 31.2, code: 'EGY' },
+  { name: 'Brasília', lat: -15.8, lng: -47.9, code: 'BRA' },
+  { name: 'Singapore', lat: 1.3, lng: 103.8, code: 'SIN' },
 ];
 
-// Helper: Convert Lat/Lng to 3D Sphere Vector3
+// Great circle connections representing canonical treaties and trade lines
+const HISTORIC_ARCS = [
+  { from: 'Washington, D.C.', to: 'London', color: 0x4f46e5 },    // Transatlantic Alliance
+  { from: 'London', to: 'Paris', color: 0x4f46e5 },              // Entente Cordiale
+  { from: 'Paris', to: 'Berlin', color: 0x4f46e5 },              // European Integration
+  { from: 'Washington, D.C.', to: 'Tokyo', color: 0x0284c7 },    // US-Japan Security
+  { from: 'Beijing', to: 'Moscow', color: 0xb45309 },            // Sino-Soviet / Strategic
+  { from: 'London', to: 'New Delhi', color: 0x059669 },          // Maritime Trade Route
+  { from: 'Geneva', to: 'Washington, D.C.', color: 0x7c3aed },   // League / UN System
+  { from: 'Tokyo', to: 'Singapore', color: 0x0284c7 },           // East Asian Trade
+];
+
 function latLngToVector3(lat: number, lng: number, radius: number): THREE.Vector3 {
   const phi = (90 - lat) * (Math.PI / 180);
   const theta = (lng + 180) * (Math.PI / 180);
@@ -43,199 +56,195 @@ export function Hero3DCanvas({
   format,
 }: Hero3DCanvasProps) {
   const mountRef = useRef<HTMLDivElement>(null);
+  const [activeNode, setActiveNode] = useState<string>('Geneva');
+  const [isRotating, setIsRotating] = useState<boolean>(true);
+  const isRotatingRef = useRef(isRotating);
+  isRotatingRef.current = isRotating;
+
   const headerLabel = [institution, department].filter(Boolean).join(' • ');
 
   useEffect(() => {
     const container = mountRef.current;
     if (!container) return;
 
-    // Dimensions
     const width = container.clientWidth;
     const height = container.clientHeight;
 
-    // Scene, Camera, Renderer
+    // Scene with warm parchment backdrop
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
-    camera.position.set(0, 0, 18);
+    scene.background = new THREE.Color(0xfcfbf8); // Clean warm archival ivory
 
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    const camera = new THREE.PerspectiveCamera(40, width / height, 0.1, 1000);
+    // Position camera to view globe cleanly on the right half
+    camera.position.set(width > 768 ? 3.5 : 0, 1.2, 16.5);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
     renderer.setSize(width, height);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    container.innerHTML = '';
     container.appendChild(renderer.domElement);
 
-    // Parent group for globe rotation
+    // Warm natural museum lighting
+    const ambientLight = new THREE.AmbientLight(0xfffdf7, 1.3);
+    scene.add(ambientLight);
+
+    const keyLight = new THREE.DirectionalLight(0xffedd5, 1.5);
+    keyLight.position.set(10, 15, 15);
+    scene.add(keyLight);
+
+    const fillLight = new THREE.DirectionalLight(0xe0e7ff, 0.7);
+    fillLight.position.set(-15, -10, -5);
+    scene.add(fillLight);
+
+    // Globe group
     const globeGroup = new THREE.Group();
+    // Offset slightly right on desktop so text has clear negative space
+    if (width > 768) {
+      globeGroup.position.set(4.5, -0.2, 0);
+    } else {
+      globeGroup.position.set(0, -1.5, 0);
+    }
     scene.add(globeGroup);
 
-    // 1. Globe Base Sphere (Wireframe/Tech Grid)
-    const radius = 5.8;
-    const sphereGeo = new THREE.SphereGeometry(radius, 40, 40);
-    
-    // Transparent wireframe mesh
-    const wireframeMat = new THREE.MeshBasicMaterial({
-      color: 0x6366f1, // Indigo 500
-      wireframe: true,
-      transparent: true,
-      opacity: 0.12,
+    // 1. Globe Base Sphere (Warm parchment finish)
+    const earthRadius = 5.2;
+    const earthGeom = new THREE.SphereGeometry(earthRadius, 64, 48);
+    const earthMat = new THREE.MeshStandardMaterial({
+      color: 0xeeebe3, // Archival warm paper tone
+      roughness: 0.85,
+      metalness: 0.05,
     });
-    const wireframeMesh = new THREE.Mesh(sphereGeo, wireframeMat);
-    globeGroup.add(wireframeMesh);
+    const earthMesh = new THREE.Mesh(earthGeom, earthMat);
+    globeGroup.add(earthMesh);
 
-    // Dark core sphere to block rear lines
-    const coreMat = new THREE.MeshBasicMaterial({
-      color: 0x0f172a, // Slate 900
+    // Graticule / Latitude parallels
+    const graticuleGroup = new THREE.Group();
+    const graticuleMat = new THREE.LineBasicMaterial({
+      color: 0x94a3b8,
+      linewidth: 1,
+      transparent: true,
+      opacity: 0.2,
+    });
+    [-60, -30, 0, 30, 60].forEach(lat => {
+      const phi = (90 - lat) * (Math.PI / 180);
+      const r = earthRadius * 1.001 * Math.sin(phi);
+      const y = earthRadius * 1.001 * Math.cos(phi);
+      const circleGeo = new THREE.BufferGeometry();
+      const pts: THREE.Vector3[] = [];
+      for (let i = 0; i <= 64; i++) {
+        const theta = (i / 64) * Math.PI * 2;
+        pts.push(new THREE.Vector3(r * Math.cos(theta), y, r * Math.sin(theta)));
+      }
+      circleGeo.setFromPoints(pts);
+      graticuleGroup.add(new THREE.Line(circleGeo, graticuleMat));
+    });
+    globeGroup.add(graticuleGroup);
+
+    // 2. Sovereign Country Borders in Crisp Charcoal Ink (from worldBordersClean.json)
+    const bordersGroup = new THREE.Group();
+    const bordersMat = new THREE.LineBasicMaterial({
+      color: 0x334155, // Charcoal slate ink
+      linewidth: 1.2,
       transparent: true,
       opacity: 0.85,
     });
-    const coreMesh = new THREE.Mesh(new THREE.SphereGeometry(radius * 0.99, 36, 36), coreMat);
-    globeGroup.add(coreMesh);
 
-    // Atmosphere Glow
-    const atmosphereGeo = new THREE.SphereGeometry(radius * 1.15, 32, 32);
-    const atmosphereMat = new THREE.MeshBasicMaterial({
-      color: 0x818cf8,
-      transparent: true,
-      opacity: 0.06,
-      side: THREE.BackSide,
-    });
-    const atmosphereMesh = new THREE.Mesh(atmosphereGeo, atmosphereMat);
-    scene.add(atmosphereMesh);
-
-    // 2. Dots Particle Cloud on Globe Surface
-    const dotCount = 1200;
-    const dotPositions: number[] = [];
-    for (let i = 0; i < dotCount; i++) {
-      // Golden spiral distribution
-      const phi = Math.acos(-1 + (2 * i) / dotCount);
-      const theta = Math.sqrt(dotCount * Math.PI) * phi;
-      const p = new THREE.Vector3(
-        radius * 1.01 * Math.cos(theta) * Math.sin(phi),
-        radius * 1.01 * Math.sin(theta) * Math.sin(phi),
-        radius * 1.01 * Math.cos(phi)
-      );
-      dotPositions.push(p.x, p.y, p.z);
-    }
-    const dotGeo = new THREE.BufferGeometry();
-    dotGeo.setAttribute('position', new THREE.Float32BufferAttribute(dotPositions, 3));
-    const dotMat = new THREE.PointsMaterial({
-      color: 0xa5b4fc,
-      size: 0.08,
-      transparent: true,
-      opacity: 0.6,
-    });
-    const dotPoints = new THREE.Points(dotGeo, dotMat);
-    globeGroup.add(dotPoints);
-
-    // 3. Strategic Hub Markers
-    const hubVectors: { name: string; vec: THREE.Vector3; type: string }[] = [];
-    GLOBAL_HUBS.forEach((hub) => {
-      const vec = latLngToVector3(hub.lat, hub.lng, radius * 1.02);
-      hubVectors.push({ name: hub.name, vec, type: hub.type });
-
-      // Glowing dot for hub
-      const hubGeo = new THREE.SphereGeometry(0.12, 12, 12);
-      const hubMat = new THREE.MeshBasicMaterial({
-        color: hub.type === 'hegemon' ? 0xf43f5e : hub.type === 'institution' ? 0x38bdf8 : 0x34d399,
+    (bordersData as number[][][]).forEach(feature => {
+      feature.forEach(ring => {
+        if (!ring || ring.length < 2) return;
+        const pts: THREE.Vector3[] = [];
+        for (let i = 0; i < ring.length; i += 2) {
+          const lng = ring[i];
+          const lat = ring[i + 1];
+          if (typeof lng === 'number' && typeof lat === 'number') {
+            pts.push(latLngToVector3(lat, lng, earthRadius * 1.003));
+          }
+        }
+        if (pts.length > 1) {
+          const geom = new THREE.BufferGeometry().setFromPoints(pts);
+          const line = new THREE.Line(geom, bordersMat);
+          bordersGroup.add(line);
+        }
       });
-      const hubMesh = new THREE.Mesh(hubGeo, hubMat);
-      hubMesh.position.copy(vec);
-      globeGroup.add(hubMesh);
+    });
+    globeGroup.add(bordersGroup);
 
-      // Outer pulse ring
-      const ringGeo = new THREE.RingGeometry(0.15, 0.22, 16);
+    // 3. Strategic Capitals & Nodes
+    const nodeMap = new Map<string, THREE.Vector3>();
+    const nodesGroup = new THREE.Group();
+
+    STRATEGIC_NODES.forEach(node => {
+      const pos = latLngToVector3(node.lat, node.lng, earthRadius * 1.01);
+      nodeMap.set(node.name, pos);
+
+      // Node dot
+      const dotGeo = new THREE.SphereGeometry(0.12, 16, 16);
+      const dotMat = new THREE.MeshBasicMaterial({ color: 0xd97706 }); // Amber-600 ink
+      const dotMesh = new THREE.Mesh(dotGeo, dotMat);
+      dotMesh.position.copy(pos);
+      nodesGroup.add(dotMesh);
+
+      // Outer ring
+      const ringGeo = new THREE.RingGeometry(0.16, 0.24, 24);
       const ringMat = new THREE.MeshBasicMaterial({
-        color: 0x818cf8,
+        color: 0x78716c,
         side: THREE.DoubleSide,
         transparent: true,
         opacity: 0.6,
       });
       const ringMesh = new THREE.Mesh(ringGeo, ringMat);
-      ringMesh.position.copy(vec);
-      ringMesh.lookAt(0, 0, 0);
-      globeGroup.add(ringMesh);
+      ringMesh.position.copy(pos);
+      ringMesh.lookAt(globeGroup.position);
+      nodesGroup.add(ringMesh);
     });
+    globeGroup.add(nodesGroup);
 
-    // 4. Arc Lines connecting Hubs
-    const linesGroup = new THREE.Group();
-    globeGroup.add(linesGroup);
+    // 4. Great Circle Treaties & Alliances Arcs
+    const arcsGroup = new THREE.Group();
+    HISTORIC_ARCS.forEach(arc => {
+      const vFrom = nodeMap.get(arc.from);
+      const vTo = nodeMap.get(arc.to);
+      if (!vFrom || !vTo) return;
 
-    function createArcs() {
-      // Clear existing
-      while (linesGroup.children.length > 0) {
-        linesGroup.remove(linesGroup.children[0]);
-      }
+      const mid = new THREE.Vector3().addVectors(vFrom, vTo).multiplyScalar(0.5);
+      const distance = vFrom.distanceTo(vTo);
+      // Lift midpoint outward for 3D curved trajectory
+      mid.normalize().multiplyScalar(earthRadius + Math.min(distance * 0.28, 1.8));
 
-      for (let i = 0; i < hubVectors.length; i++) {
-        for (let j = i + 1; j < hubVectors.length; j++) {
-          const v1 = hubVectors[i].vec;
-          const v2 = hubVectors[j].vec;
-          const dist = v1.distanceTo(v2);
-
-          // Connect if within reasonable range
-          if (dist < 8.5) {
-            // Midpoint elevated above sphere
-            const mid = v1.clone().add(v2).multiplyScalar(0.5);
-            const midLength = mid.length();
-            mid.normalize().multiplyScalar(midLength + dist * 0.25);
-
-            const curve = new THREE.QuadraticBezierCurve3(v1, mid, v2);
-            const points = curve.getPoints(32);
-            const curveGeo = new THREE.BufferGeometry().setFromPoints(points);
-
-            const lineMat = new THREE.LineBasicMaterial({
-              color: 0x818cf8,
-              transparent: true,
-              opacity: 0.35,
-            });
-            const line = new THREE.Line(curveGeo, lineMat);
-            linesGroup.add(line);
-          }
-        }
-      }
-    }
-
-    createArcs();
-
-    // 5. Space Constellation Background Particles
-    const starCount = 300;
-    const starPositions = new Float32Array(starCount * 3);
-    for (let i = 0; i < starCount * 3; i += 3) {
-      starPositions[i] = (Math.random() - 0.5) * 60;
-      starPositions[i + 1] = (Math.random() - 0.5) * 60;
-      starPositions[i + 2] = (Math.random() - 0.5) * 40 - 10;
-    }
-    const starGeo = new THREE.BufferGeometry();
-    starGeo.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
-    const starMat = new THREE.PointsMaterial({
-      color: 0xc7d2fe,
-      size: 0.08,
-      transparent: true,
-      opacity: 0.4,
+      const curve = new THREE.QuadraticBezierCurve3(vFrom, mid, vTo);
+      const points = curve.getPoints(40);
+      const arcGeo = new THREE.BufferGeometry().setFromPoints(points);
+      const arcMat = new THREE.LineBasicMaterial({
+        color: arc.color,
+        linewidth: 1.5,
+        transparent: true,
+        opacity: 0.7,
+      });
+      const arcLine = new THREE.Line(arcGeo, arcMat);
+      arcsGroup.add(arcLine);
     });
-    const starField = new THREE.Points(starGeo, starMat);
-    scene.add(starField);
+    globeGroup.add(arcsGroup);
 
-    // Mouse Controls / Dragging
+    // Initial rotation tilt for classic cartographic projection
+    globeGroup.rotation.x = 0.25;
+    globeGroup.rotation.y = 1.1;
+
+    // Mouse / Touch Dragging Controls
     let isDragging = false;
-    let previousMousePosition = { x: 0, y: 0 };
+    let prevMouse = { x: 0, y: 0 };
 
     const onMouseDown = (e: MouseEvent) => {
       isDragging = true;
-      previousMousePosition = { x: e.clientX, y: e.clientY };
+      prevMouse = { x: e.clientX, y: e.clientY };
     };
 
     const onMouseMove = (e: MouseEvent) => {
       if (!isDragging) return;
-
-      const deltaMove = {
-        x: e.clientX - previousMousePosition.x,
-        y: e.clientY - previousMousePosition.y,
-      };
-
-      globeGroup.rotation.y += deltaMove.x * 0.005;
-      globeGroup.rotation.x += deltaMove.y * 0.005;
-
-      previousMousePosition = { x: e.clientX, y: e.clientY };
+      const dx = e.clientX - prevMouse.x;
+      const dy = e.clientY - prevMouse.y;
+      globeGroup.rotation.y += dx * 0.005;
+      globeGroup.rotation.x += dy * 0.005;
+      prevMouse = { x: e.clientX, y: e.clientY };
     };
 
     const onMouseUp = () => {
@@ -246,22 +255,20 @@ export function Hero3DCanvas({
     window.addEventListener('mousemove', onMouseMove);
     window.addEventListener('mouseup', onMouseUp);
 
-    // Touch Support
+    // Touch support
     const onTouchStart = (e: TouchEvent) => {
       if (e.touches.length === 1) {
         isDragging = true;
-        previousMousePosition = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+        prevMouse = { x: e.touches[0].clientX, y: e.touches[0].clientY };
       }
     };
     const onTouchMove = (e: TouchEvent) => {
       if (!isDragging || e.touches.length !== 1) return;
-      const deltaMove = {
-        x: e.touches[0].clientX - previousMousePosition.x,
-        y: e.touches[0].clientY - previousMousePosition.y,
-      };
-      globeGroup.rotation.y += deltaMove.x * 0.005;
-      globeGroup.rotation.x += deltaMove.y * 0.005;
-      previousMousePosition = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+      const dx = e.touches[0].clientX - prevMouse.x;
+      const dy = e.touches[0].clientY - prevMouse.y;
+      globeGroup.rotation.y += dx * 0.005;
+      globeGroup.rotation.x += dy * 0.005;
+      prevMouse = { x: e.touches[0].clientX, y: e.touches[0].clientY };
     };
     const onTouchEnd = () => {
       isDragging = false;
@@ -271,13 +278,20 @@ export function Hero3DCanvas({
     container.addEventListener('touchmove', onTouchMove);
     container.addEventListener('touchend', onTouchEnd);
 
-    // Resize Observer
+    // Resize observer
     const resizeObserver = new ResizeObserver((entries) => {
       for (const entry of entries) {
         const newW = entry.contentRect.width;
         const newH = entry.contentRect.height;
         if (newW > 0 && newH > 0) {
           camera.aspect = newW / newH;
+          if (newW > 768) {
+            camera.position.set(3.5, 1.2, 16.5);
+            globeGroup.position.set(4.5, -0.2, 0);
+          } else {
+            camera.position.set(0, 1.2, 16.5);
+            globeGroup.position.set(0, -1.2, 0);
+          }
           camera.updateProjectionMatrix();
           renderer.setSize(newW, newH);
         }
@@ -285,24 +299,19 @@ export function Hero3DCanvas({
     });
     resizeObserver.observe(container);
 
-    // Animation Loop
-    let animationFrameId: number;
+    // Animation loop
+    let animId: number;
     const animate = () => {
-      animationFrameId = requestAnimationFrame(animate);
-
-      if (!isDragging) {
-        globeGroup.rotation.y += 0.002;
-        starField.rotation.y += 0.0003;
+      animId = requestAnimationFrame(animate);
+      if (!isDragging && isRotatingRef.current) {
+        globeGroup.rotation.y += 0.0018;
       }
-
       renderer.render(scene, camera);
     };
-
     animate();
 
-    // Clean up
     return () => {
-      cancelAnimationFrame(animationFrameId);
+      cancelAnimationFrame(animId);
       resizeObserver.disconnect();
       container.removeEventListener('mousedown', onMouseDown);
       window.removeEventListener('mousemove', onMouseMove);
@@ -310,7 +319,6 @@ export function Hero3DCanvas({
       container.removeEventListener('touchstart', onTouchStart);
       container.removeEventListener('touchmove', onTouchMove);
       container.removeEventListener('touchend', onTouchEnd);
-
       if (renderer.domElement && container.contains(renderer.domElement)) {
         container.removeChild(renderer.domElement);
       }
@@ -319,35 +327,63 @@ export function Hero3DCanvas({
   }, []);
 
   return (
-    <div className="relative bg-slate-950 rounded-2xl border border-indigo-900/50 shadow-xl overflow-hidden py-6 md:py-8 flex flex-col justify-center">
-      {/* 3D WebGL Canvas Layer */}
+    <div className="relative bg-[#fcfbf8] rounded-2xl border border-stone-300/80 shadow-xs overflow-hidden min-h-[380px] md:min-h-[440px] flex items-center">
+      {/* 3D WebGL Canvas Layer (Parchment Globe with Real Borders) */}
       <div
         ref={mountRef}
         className="absolute inset-0 cursor-grab active:cursor-grabbing z-0"
-        title="Click & drag to rotate 3D Globe"
+        title="Interactive Geopolitical Globe: Drag to rotate sovereign borders & alliance arcs"
       />
 
-      {/* Subtle Gradient Overlays for Readability */}
-      <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-slate-950/60 to-transparent pointer-events-none z-10" />
-      <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-slate-950/40 pointer-events-none z-10" />
+      {/* Parchment subtle gradient to ensure text readability */}
+      <div className="absolute inset-0 bg-gradient-to-r from-[#fcfbf8] via-[#fcfbf8]/85 to-transparent pointer-events-none z-10 w-full md:w-3/5" />
 
-      {/* Foreground Text & Information Header */}
-      <div className="relative z-20 px-6 md:px-10 py-2 max-w-3xl space-y-2">
+      {/* Foreground Content */}
+      <div className="relative z-20 px-6 sm:px-8 md:px-12 py-8 max-w-2xl space-y-4">
         {headerLabel && (
           <div className="flex flex-wrap items-center gap-2">
-            <span className="bg-indigo-500/20 backdrop-blur-md text-indigo-300 text-xs font-semibold px-3 py-1 rounded-full border border-indigo-500/30">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-stone-100 text-stone-800 border border-stone-200 shadow-2xs font-mono">
+              <Compass className="w-3.5 h-3.5 text-stone-600" />
               {headerLabel}
+            </span>
+            <span className="px-2.5 py-1 rounded-full text-xs font-mono font-medium bg-amber-50 text-amber-800 border border-amber-200">
+              Spring 2027 · {format}
             </span>
           </div>
         )}
 
-        <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-white tracking-tight leading-tight">
-          {courseCode}: <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-200 via-white to-sky-300">{title}</span>
-        </h1>
+        <div className="space-y-1.5">
+          <div className="font-mono text-xs font-bold text-indigo-700 tracking-wider uppercase">
+            {courseCode} · Core Seminar
+          </div>
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-stone-900 tracking-tight leading-tight">
+            {title}
+          </h1>
+        </div>
 
-        <p className="text-indigo-200/90 text-sm md:text-base font-light leading-relaxed">
-          Spring 2027 • {format}
+        <p className="text-stone-700 text-sm sm:text-base leading-relaxed">
+          An empirical and theoretical investigation into conflict, alliance formation, power transitions, and economic interdependence across modern sovereign states.
         </p>
+
+        {/* Sovereign Borders & Interactive Map Guide Note */}
+        <div className="flex flex-wrap items-center gap-3 pt-2">
+          <div className="flex items-center gap-2 text-xs font-mono text-stone-600 bg-white/90 backdrop-blur-xs px-3 py-1.5 rounded-lg border border-stone-200 shadow-2xs">
+            <Layers className="w-3.5 h-3.5 text-stone-500" />
+            <span>Sovereign Borders (Charcoal Ink)</span>
+          </div>
+
+          <div className="flex items-center gap-2 text-xs font-mono text-stone-600 bg-white/90 backdrop-blur-xs px-3 py-1.5 rounded-lg border border-stone-200 shadow-2xs">
+            <span className="w-2 h-2 rounded-full bg-amber-500 inline-block" />
+            <span>Diplomatic Nodes</span>
+          </div>
+
+          <button
+            onClick={() => setIsRotating(!isRotating)}
+            className="text-xs font-mono px-3 py-1.5 rounded-lg bg-stone-200/80 hover:bg-stone-300/80 text-stone-800 border border-stone-300 transition-colors cursor-pointer"
+          >
+            {isRotating ? 'Pause Rotation' : 'Resume Rotation'}
+          </button>
+        </div>
       </div>
     </div>
   );
