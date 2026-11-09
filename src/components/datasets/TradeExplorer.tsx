@@ -16,10 +16,13 @@ import {
   BarChart3,
   ExternalLink,
   ShieldAlert,
-  Sparkles
+  Sparkles,
+  GitFork
 } from 'lucide-react';
+import { TradeSankeyDiagram } from './TradeSankeyDiagram';
 
 export function TradeExplorer() {
+  const [viewMode, setViewMode] = useState<'sankey' | 'macro'>('sankey');
   const [selectedEra, setSelectedEra] = useState<'all' | 'first' | 'collapse' | 'postwar' | 'hyper'>('all');
 
   const eras = [
@@ -124,25 +127,62 @@ export function TradeExplorer() {
         </div>
       </div>
 
-      {/* The 4 Eras of Globalization Cards */}
-      <div>
-        <h3 className="text-sm font-bold text-white mb-3 flex items-center gap-2">
-          <Calendar className="w-4 h-4 text-amber-400" />
-          The Four Great Eras of Economic Interdependence
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
-          {eras.map(era => (
-            <div
-              key={era.id}
-              className="p-4 rounded-xl bg-zinc-900/60 border border-zinc-800 hover:border-amber-500/40 hover:bg-zinc-850 transition-all"
-            >
-              <div className="text-[11px] font-mono text-amber-400 font-bold mb-1">{era.years}</div>
-              <h4 className="text-xs font-bold text-white leading-snug">{era.name}</h4>
-              <p className="text-[11px] text-zinc-400 mt-2 leading-relaxed">{era.desc}</p>
-            </div>
-          ))}
+      {/* View Mode Switcher */}
+      <div className="flex items-center justify-between gap-3 flex-wrap">
+        <div className="flex items-center gap-2 bg-zinc-900/90 p-1.5 rounded-2xl border border-zinc-800">
+          <button
+            onClick={() => setViewMode('sankey')}
+            className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all ${
+              viewMode === 'sankey'
+                ? 'bg-amber-600 text-white shadow-sm'
+                : 'text-zinc-400 hover:text-white hover:bg-zinc-800'
+            }`}
+          >
+            <GitFork className="w-3.5 h-3.5" />
+            <span>Dynamic Sankey Diagram (D3.js)</span>
+          </button>
+          <button
+            onClick={() => setViewMode('macro')}
+            className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all ${
+              viewMode === 'macro'
+                ? 'bg-amber-600 text-white shadow-sm'
+                : 'text-zinc-400 hover:text-white hover:bg-zinc-800'
+            }`}
+          >
+            <BarChart3 className="w-3.5 h-3.5" />
+            <span>Macro Trajectory & Rankings</span>
+          </button>
         </div>
+
+        <span className="text-xs font-mono text-zinc-400">
+          {viewMode === 'sankey' ? 'Interactive Bilateral Flow Ribbons' : '145-Year Aggregate Series'}
+        </span>
       </div>
+
+      {/* Conditional Content */}
+      {viewMode === 'sankey' ? (
+        <TradeSankeyDiagram />
+      ) : (
+        <>
+          {/* The 4 Eras of Globalization Cards */}
+          <div>
+            <h3 className="text-sm font-bold text-white mb-3 flex items-center gap-2">
+              <Calendar className="w-4 h-4 text-amber-400" />
+              The Four Great Eras of Economic Interdependence
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+              {eras.map(era => (
+                <div
+                  key={era.id}
+                  className="p-4 rounded-xl bg-zinc-900/60 border border-zinc-800 hover:border-amber-500/40 hover:bg-zinc-850 transition-all"
+                >
+                  <div className="text-[11px] font-mono text-amber-400 font-bold mb-1">{era.years}</div>
+                  <h4 className="text-xs font-bold text-white leading-snug">{era.name}</h4>
+                  <p className="text-[11px] text-zinc-400 mt-2 leading-relaxed">{era.desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
 
       {/* Global Trade Trajectory & Modern Leaders */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -218,6 +258,8 @@ export function TradeExplorer() {
           </div>
         </div>
       </div>
-    </div>
+    </>
+  )}
+</div>
   );
 }

@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { Activities3DHeader } from './Activities3DHeader';
 import { BargainingSimulation } from './activities/BargainingSimulation';
 import { PrisonersDilemma } from './activities/PrisonersDilemma';
 import { UNSCNegotiator } from './activities/UNSCNegotiator';
@@ -31,9 +30,7 @@ export function Activities() {
   return (
     <div className="space-y-8 max-w-5xl mx-auto">
       {/* Header Banner */}
-      <div className="relative bg-gradient-to-r from-indigo-950 via-indigo-900 to-slate-950 text-white rounded-3xl p-6 md:p-10 shadow-lg overflow-hidden border border-indigo-800/50">
-        <Activities3DHeader activeTab={activeSubTab} />
-
+      <div className="bg-gradient-to-r from-indigo-950 via-indigo-900 to-slate-900 text-white rounded-3xl p-6 md:p-10 shadow-lg border border-indigo-800/50">
         <div className="relative z-10">
           <div className="flex items-center gap-2 text-indigo-300 font-bold text-xs uppercase tracking-wider mb-2">
             <Gamepad2 className="w-5 h-5 text-indigo-400" />

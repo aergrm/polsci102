@@ -10,7 +10,12 @@ import {
   Flame,
   Info,
   Layers,
-  ArrowRight
+  ArrowRight,
+  Users,
+  Building2,
+  Target,
+  Repeat,
+  GitFork
 } from 'lucide-react';
 import {
   cincCapabilitiesData,
@@ -19,6 +24,7 @@ import {
   sipriSpendingTrends,
   regimeWavesData
 } from '../data/irDatasets';
+import { TradeSankeyDiagram } from './datasets/TradeSankeyDiagram';
 
 interface InteractiveFigureProps {
   week: number;
@@ -47,14 +53,24 @@ export function WeekInteractiveFigure({ week, title }: InteractiveFigureProps) {
     return <FearonBargainingVisualizer week={week} />;
   }
 
-  if (week === 7 || week === 11) {
+  if (week === 7) {
     // Formal Alliance Networks vs Bilateral DCAs (COW v4.1 & Kinne DCAD)
     return <AllianceTypologyVisualizer week={week} />;
+  }
+
+  if (week === 8) {
+    // Allison's Three Models of Foreign Policy Decision-Making (RAM vs Org vs Bureaucracy)
+    return <AllisonBureaucracyVisualizer week={week} />;
   }
 
   if (week === 10) {
     // UCDP / PRIO Intrastate vs Interstate Warfare Transformation (1946–2023)
     return <UcdpConflictTrendVisualizer week={week} />;
+  }
+
+  if (week === 11) {
+    // Neoliberal Institutionalism & Axelrod's Shadow of the Future Cooperation Simulator
+    return <InstitutionalCooperationVisualizer week={week} />;
   }
 
   if (week === 12 || week === 13) {
@@ -633,6 +649,7 @@ function AllianceTypologyVisualizer({ week }: { week: number }) {
 // 7. TRADE INTERDEPENDENCE VISUALIZER (Weeks 12 & 13)
 // =========================================================================
 function TradeInterdependenceVisualizer({ week }: { week: number }) {
+  const [viewMode, setViewMode] = useState<'sankey' | 'epochs'>('sankey');
   const [activeEra, setActiveEra] = useState<string>('hyper');
 
   const eras = [
@@ -645,40 +662,78 @@ function TradeInterdependenceVisualizer({ week }: { week: number }) {
   const cur = eras.find(e => e.id === activeEra)!;
 
   return (
-    <div className="bg-white rounded-2xl p-5 border border-zinc-200 shadow-xs space-y-5">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-zinc-100 pb-3">
-        <div>
-          <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-indigo-600">
-            COW Bilateral & National Trade v4.0 (1870–2014) · Barbieri & Keshk
-          </span>
-          <h3 className="text-base font-bold text-zinc-900 mt-0.5">
-            The Commercial Peace: Global Trade Trajectory Over 145 Years
-          </h3>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        {eras.map(e => (
+    <div className="space-y-4">
+      {/* Switcher bar */}
+      <div className="flex items-center justify-between gap-3 bg-white p-3 rounded-2xl border border-zinc-200">
+        <div className="flex items-center gap-2">
           <button
-            key={e.id}
-            onClick={() => setActiveEra(e.id)}
-            className={`p-3.5 rounded-xl border text-left transition-all ${
-              activeEra === e.id
-                ? 'bg-amber-50 border-amber-500 ring-2 ring-amber-400 shadow-sm'
-                : 'bg-zinc-50 border-zinc-200 hover:bg-zinc-100 text-zinc-700'
+            onClick={() => setViewMode('sankey')}
+            className={`flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
+              viewMode === 'sankey'
+                ? 'bg-amber-600 text-white shadow-xs'
+                : 'bg-zinc-100 text-zinc-700 hover:bg-zinc-200'
             }`}
           >
-            <div className="text-[10px] font-mono text-amber-700 font-bold">{e.years}</div>
-            <div className="text-xs font-bold text-zinc-900 mt-0.5">{e.name}</div>
-            <div className="text-xs font-mono font-extrabold text-amber-900 mt-1">{e.volume}</div>
+            <GitFork className="w-3.5 h-3.5" />
+            <span>Dynamic Trade Flows Sankey (D3.js)</span>
           </button>
-        ))}
+          <button
+            onClick={() => setViewMode('epochs')}
+            className={`flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
+              viewMode === 'epochs'
+                ? 'bg-amber-600 text-white shadow-xs'
+                : 'bg-zinc-100 text-zinc-700 hover:bg-zinc-200'
+            }`}
+          >
+            <Layers className="w-3.5 h-3.5" />
+            <span>Four Historical Globalization Eras</span>
+          </button>
+        </div>
+
+        <span className="text-xs font-mono text-zinc-500 hidden sm:inline">
+          COW Bilateral Trade Dataset v4.0
+        </span>
       </div>
 
-      <div className="p-4 rounded-xl bg-amber-50/80 border border-amber-200 text-xs text-amber-950 space-y-1">
-        <strong className="font-bold">{cur.name} ({cur.years}): </strong>
-        <span>{cur.desc}</span>
-      </div>
+      {viewMode === 'sankey' ? (
+        <TradeSankeyDiagram />
+      ) : (
+        <div className="bg-white rounded-2xl p-5 border border-zinc-200 shadow-xs space-y-5">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-zinc-100 pb-3">
+            <div>
+              <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-indigo-600">
+                COW Bilateral & National Trade v4.0 (1870–2014) · Barbieri & Keshk
+              </span>
+              <h3 className="text-base font-bold text-zinc-900 mt-0.5">
+                The Commercial Peace: Global Trade Trajectory Over 145 Years
+              </h3>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            {eras.map(e => (
+              <button
+                key={e.id}
+                onClick={() => setActiveEra(e.id)}
+                className={`p-3.5 rounded-xl border text-left transition-all ${
+                  activeEra === e.id
+                    ? 'bg-amber-50 border-amber-500 ring-2 ring-amber-400 shadow-sm'
+                    : 'bg-zinc-50 border-zinc-200 hover:bg-zinc-100 text-zinc-700'
+                }`}
+              >
+                <div className="text-[10px] font-mono text-amber-700 font-bold">{e.years}</div>
+                <div className="text-xs font-bold text-zinc-900 mt-0.5">{e.name}</div>
+                <div className="text-xs font-mono font-extrabold text-amber-900 mt-1">{e.volume}</div>
+              </button>
+            ))}
+          </div>
+
+          <div className="p-4 rounded-xl bg-amber-50/80 border border-amber-200 text-xs text-amber-950 space-y-1">
+            <strong className="font-bold">{cur.name} ({cur.years}): </strong>
+            <span>{cur.desc}</span>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -728,3 +783,327 @@ function SipriSpendingVisualizer({ week }: { week: number }) {
     </div>
   );
 }
+
+// =========================================================================
+// 9. ALLISON'S THREE MODELS OF FOREIGN POLICY (Week 8)
+// =========================================================================
+function AllisonBureaucracyVisualizer({ week }: { week: number }) {
+  const [selectedModel, setSelectedModel] = useState<1 | 2 | 3>(1);
+  const [selectedCase, setSelectedCase] = useState<'cuban' | 'iraq' | 'pearl'>('cuban');
+
+  const models = [
+    {
+      id: 1 as const,
+      name: 'Model I: Rational Policy (RAM)',
+      subtitle: 'Unitary Strategic Choice',
+      analystIcon: Target,
+      color: 'border-blue-500 bg-blue-50 text-blue-900',
+      activeRing: 'ring-blue-400 bg-blue-50',
+      tag: 'Classical Game Theory & Realism',
+      coreAssumption: 'States are unitary, rational actors that rank preferences, weigh alternatives against costs and benefits, and select options that maximize national strategic objectives.'
+    },
+    {
+      id: 2 as const,
+      name: 'Model II: Organizational Process',
+      subtitle: 'Standard Operating Procedures (SOPs)',
+      analystIcon: Building2,
+      color: 'border-emerald-500 bg-emerald-50 text-emerald-900',
+      activeRing: 'ring-emerald-400 bg-emerald-50',
+      tag: 'Herbert Simon Bounded Rationality',
+      coreAssumption: 'Government behavior reflects outputs of large, semi-autonomous organizations functioning according to pre-established Standard Operating Procedures (SOPs) and repertoires.'
+    },
+    {
+      id: 3 as const,
+      name: 'Model III: Bureaucratic Politics',
+      subtitle: 'Pulling and Hauling / Bargaining',
+      analystIcon: Users,
+      color: 'border-purple-500 bg-purple-50 text-purple-900',
+      activeRing: 'ring-purple-400 bg-purple-50',
+      tag: '"Where you stand depends on where you sit"',
+      coreAssumption: 'Decisions are not chosen by a single brain, but emerge as political resultants from internal bargaining, turf defense, and compromise among players with divergent departmental loyalties.'
+    }
+  ];
+
+  const caseStudies = {
+    cuban: {
+      title: 'Cuban Missile Crisis (October 1962)',
+      explanations: {
+        1: {
+          title: 'Rational Deterrence Rebalancing',
+          detail: 'Khrushchev placed medium-range nuclear missiles in Cuba as a rational move to rectify the severe strategic nuclear imbalance (US 17:1 warhead superiority and Jupiter missiles in Turkey). President Kennedy’s naval quarantine was the optimal calculated escalation step that signaled maximum resolve while avoiding immediate thermonuclear exchange.',
+          takeaway: 'Examines state action as an optimal value-maximizing response to a strategic threat.'
+        },
+        2: {
+          title: 'Organizational Blind Spots & SOP Glitches',
+          detail: 'Soviets constructed missile sites using the exact same standard physical layout used inside the USSR, without camouflage, because Soviet Strategic Rocket Forces had never established concealment SOPs. When JFK ordered the US naval quarantine moved from 500 to 800 miles, Chief of Naval Operations Admiral George Anderson insisted on following standard naval manual procedures regardless.',
+          takeaway: 'Uncovers how organizational routines create operational failures that no rational leader intended.'
+        },
+        3: {
+          title: 'Intense Bureaucratic Coalition Bargaining',
+          detail: 'The ExComm debate was fierce: Air Force Chief Curtis LeMay aggressively lobbied for an 800-sortie preemptive bombing campaign to protect Air Force prestige; Defense Secretary McNamara and Robert Kennedy advocated a naval blockade to protect the President from political backlash and avoid a "Pearl Harbor in reverse" moral disaster.',
+          takeaway: 'Demonstrates how final policy was a compromised resultant negotiated between competing department heads.'
+        }
+      }
+    },
+    iraq: {
+      title: '2003 Iraq Intelligence Assessment',
+      explanations: {
+        1: {
+          title: 'Preventive Strategic Calculus',
+          detail: 'The US administration weighed the intolerable risk of a hostile Saddam regime sharing non-conventional capabilities with non-state terrorist networks against the military costs of regime change.',
+          takeaway: 'Frames policy as a deliberate cost-benefit decision under post-9/11 threat perceptions.'
+        },
+        2: {
+          title: 'Intelligence Collection SOPs & Confirmation Bias',
+          detail: 'Intelligence agencies relied on compartmentalized collection routines that filtered and amplified unverified source reports (e.g. "Curveball") without testing organizational hypotheses.',
+          takeaway: 'Reveals how routine analysis procedures fail when evaluating novel or deceptive evidence.'
+        },
+        3: {
+          title: 'Office of Special Plans vs. State Dept / CIA',
+          detail: 'DOD civilian leadership (Wolfowitz, Feith) created competing intelligence channels to bypass CIA analysts, marginalizing Colin Powell’s State Department through internal White House leverage.',
+          takeaway: 'Illustrates how bureaucratic infighting dictated which intelligence assessments reached the Oval Office.'
+        }
+      }
+    },
+    pearl: {
+      title: 'Pearl Harbor Surprise Attack (December 1941)',
+      explanations: {
+        1: {
+          title: 'Imperial Japanese Desperation Gamble',
+          detail: 'Confronted with the crippling US oil embargo that gave Tokyo an 18-month fuel lifeline, Japanese military leaders rationally calculated that a decisive surprise strike was their only path to force a negotiated Pacific partition.',
+          takeaway: 'Explains high-risk aggression as a calculated last resort against resource starvation.'
+        },
+        2: {
+          title: 'US Army-Navy Inter-Service Radar & Signal Silos',
+          detail: 'Radar stations detected inbound Japanese aircraft but standard protocol failed to alert command; cryptanalytic "Magic" intercepts were hoarded between Navy and Army desks without routine synthesis.',
+          takeaway: 'Demonstrates catastrophic intelligence breakdown caused by fragmented organizational boundaries.'
+        },
+        3: {
+          title: 'Departmental Rivalry in Washington & Tokyo',
+          detail: 'In Tokyo, Imperial Army and Navy factionalism prevented any unified war termination strategy; in Washington, command rivalries between Admiral Kimmel and General Short hindered joint patrol coordination.',
+          takeaway: 'Shows how inter-service turf rivalries produce blind spots that adversaries can exploit.'
+        }
+      }
+    }
+  };
+
+  const currentModel = models.find(m => m.id === selectedModel)!;
+  const currentCase = caseStudies[selectedCase];
+  const explanation = currentCase.explanations[selectedModel];
+
+  return (
+    <div className="bg-white rounded-2xl p-5 border border-zinc-200 shadow-xs space-y-5">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-zinc-100 pb-3">
+        <div>
+          <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-indigo-600">
+            Graham Allison’s Essence of Decision · Foreign Policy Analysis
+          </span>
+          <h3 className="text-base font-bold text-zinc-900 mt-0.5">
+            Three Lenses of Foreign Policy Decision-Making
+          </h3>
+        </div>
+        <div className="flex items-center gap-1.5 text-xs font-mono">
+          <span className="text-zinc-500">Case Study:</span>
+          <select
+            value={selectedCase}
+            onChange={(e) => setSelectedCase(e.target.value as any)}
+            className="bg-zinc-50 border border-zinc-200 rounded-lg px-2.5 py-1 text-zinc-800 font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          >
+            <option value="cuban">Cuban Missile Crisis (1962)</option>
+            <option value="iraq">2003 Iraq Intelligence</option>
+            <option value="pearl">Pearl Harbor Attack (1941)</option>
+          </select>
+        </div>
+      </div>
+
+      {/* Model Selector Tabs */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        {models.map(m => {
+          const Icon = m.analystIcon;
+          const isSelected = selectedModel === m.id;
+          return (
+            <button
+              key={m.id}
+              onClick={() => setSelectedModel(m.id)}
+              className={`p-3.5 rounded-xl border text-left transition-all ${
+                isSelected
+                  ? `${m.color} ring-2 ${m.activeRing} shadow-sm`
+                  : 'bg-zinc-50 border-zinc-200 hover:bg-zinc-100 text-zinc-700'
+              }`}
+            >
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-mono font-bold">{m.name}</span>
+                <Icon className="w-4 h-4 opacity-75" />
+              </div>
+              <div className="text-[11px] font-medium text-zinc-600 mt-1">{m.subtitle}</div>
+              <div className="text-[10px] text-zinc-500 font-mono mt-1">{m.tag}</div>
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Dynamic Model Analysis for Current Case */}
+      <div className="space-y-3 pt-1">
+        <div className="p-4 rounded-xl border border-zinc-200 bg-zinc-50 space-y-2">
+          <div className="flex items-center justify-between border-b border-zinc-200 pb-2">
+            <span className="text-xs font-mono font-bold uppercase text-indigo-700">
+              {currentCase.title} through {currentModel.name}
+            </span>
+            <span className="text-[11px] font-mono text-zinc-500">{explanation.title}</span>
+          </div>
+
+          <p className="text-xs text-zinc-800 font-sans leading-relaxed">
+            {explanation.detail}
+          </p>
+
+          <div className="text-[11px] font-mono text-indigo-900 bg-indigo-50/80 p-2.5 rounded-lg border border-indigo-100 flex items-start gap-1.5 mt-2">
+            <Info className="w-3.5 h-3.5 text-indigo-600 shrink-0 mt-0.5" />
+            <span><strong>Analytical Lens Takeaway: </strong>{explanation.takeaway}</span>
+          </div>
+        </div>
+
+        {/* Theoretical Axiom Decoder */}
+        <div className="p-3.5 bg-zinc-100/80 rounded-xl text-xs text-zinc-700 leading-relaxed border border-zinc-200">
+          <strong className="text-zinc-900">Foundational Axiom of {currentModel.name}: </strong>
+          <span>{currentModel.coreAssumption}</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// =========================================================================
+// 10. NEOLIBERAL INSTITUTIONALISM & SHADOW OF THE FUTURE (Week 11)
+// =========================================================================
+function InstitutionalCooperationVisualizer({ week }: { week: number }) {
+  const [discountDelta, setDiscountDelta] = useState<number>(0.75); // Shadow of the future delta
+  const [verificationActive, setVerificationActive] = useState<boolean>(true);
+
+  // Payoff Matrix for Prisoner's Dilemma
+  // Cooperate / Cooperate: R = 3
+  // Defect / Cooperate: T = 5 (Temptation)
+  // Defect / Defect: P = 1 (Punishment)
+  // Cooperate / Defect: S = 0 (Sucker)
+  const R = 3;
+  const T = verificationActive ? 4.0 : 5.0; // Institutional verification lowers temptation to cheat
+  const P = 1;
+
+  // Axelrod condition: Cooperation is sustainable if delta >= (T - R) / (T - P)
+  const thresholdDelta = (T - R) / (T - P);
+  const isCooperationSustainable = discountDelta >= thresholdDelta;
+
+  return (
+    <div className="bg-white rounded-2xl p-5 border border-zinc-200 shadow-xs space-y-5">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-zinc-100 pb-3">
+        <div>
+          <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-indigo-600">
+            Neoliberal Institutionalism · Robert Axelrod & Robert Keohane
+          </span>
+          <h3 className="text-base font-bold text-zinc-900 mt-0.5">
+            The Shadow of the Future: Iterated Cooperation under Anarchy
+          </h3>
+        </div>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setVerificationActive(!verificationActive)}
+            className={`px-3 py-1.5 rounded-lg font-mono text-xs font-bold transition-all border ${
+              verificationActive
+                ? 'bg-emerald-50 text-emerald-800 border-emerald-300 ring-1 ring-emerald-400'
+                : 'bg-zinc-100 text-zinc-600 border-zinc-200 hover:bg-zinc-200'
+            }`}
+          >
+            {verificationActive ? '✓ Institutional Monitoring (Active)' : '+ Add Verification Regime'}
+          </button>
+        </div>
+      </div>
+
+      {/* Interactive Horizon Slider (Discount Factor delta) */}
+      <div className="bg-zinc-50 p-4 rounded-xl border border-zinc-200 space-y-3">
+        <div className="flex items-center justify-between">
+          <label className="text-xs font-mono font-bold text-zinc-800 flex items-center gap-1.5">
+            <Repeat className="w-4 h-4 text-indigo-600" />
+            <span>Discount Factor δ ("Shadow of the Future" Horizon):</span>
+          </label>
+          <span className="font-mono text-sm font-extrabold text-indigo-600">
+            δ = {discountDelta.toFixed(2)}
+          </span>
+        </div>
+
+        <input
+          type="range"
+          min="0.10"
+          max="0.95"
+          step="0.05"
+          value={discountDelta}
+          onChange={(e) => setDiscountDelta(parseFloat(e.target.value))}
+          className="w-full accent-indigo-600 cursor-pointer h-2 bg-zinc-200 rounded-lg"
+        />
+
+        <div className="flex justify-between text-[10px] font-mono text-zinc-500">
+          <span>δ = 0.10 (Immediate horizon / Impending crisis)</span>
+          <span>Critical Threshold: δ* = {thresholdDelta.toFixed(2)}</span>
+          <span>δ = 0.95 (Long-term iterated relationship)</span>
+        </div>
+      </div>
+
+      {/* Equilibrium Status Indicator Card */}
+      <div
+        className={`p-4 rounded-xl border transition-all ${
+          isCooperationSustainable
+            ? 'bg-emerald-50/80 border-emerald-300 text-emerald-950'
+            : 'bg-rose-50/80 border-rose-300 text-rose-950'
+        }`}
+      >
+        <div className="flex items-center gap-2 font-mono font-bold text-sm">
+          <span
+            className={`w-3 h-3 rounded-full ${
+              isCooperationSustainable ? 'bg-emerald-500 animate-pulse' : 'bg-rose-500'
+            }`}
+          />
+          <span>
+            {isCooperationSustainable
+              ? 'Stable Cooperative Equilibrium (Tit-for-Tat Dominates Defection)'
+              : 'Suboptimal Defection Trap (One-Shot Nash Equilibrium)'}
+          </span>
+        </div>
+
+        <p className="text-xs font-sans mt-2 leading-relaxed">
+          {isCooperationSustainable ? (
+            <span>
+              Because the shadow of the future <strong>(δ = {discountDelta.toFixed(2)})</strong> exceeds the critical defect threshold <strong>(δ* = {thresholdDelta.toFixed(2)})</strong>, the long-run stream of mutual cooperation payoffs (R = {R}) strictly outweighs the short-term temptation to cheat (T = {T.toFixed(1)}). International institutions stabilize cooperation by locking in expectations of repeated future interaction.
+            </span>
+          ) : (
+            <span>
+              Because the horizon is short <strong>(δ = {discountDelta.toFixed(2)} &lt; {thresholdDelta.toFixed(2)})</strong>, the immediate temptation to cheat outweighs discounted future punishment. Under pure anarchy with short horizons, both states play Defect, trapping the system in a suboptimal outcome (P = {P}, P = {P}).
+            </span>
+          )}
+        </p>
+      </div>
+
+      {/* 3 Core Institutional Mechanisms Decoder */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
+        <div className="p-3 bg-zinc-50 rounded-xl border border-zinc-200 space-y-1 text-xs">
+          <div className="font-mono font-bold text-indigo-700">1. Lowering Costs</div>
+          <p className="text-[11px] text-zinc-600 leading-snug">
+            Treaties provide standard negotiation templates, reducing the transaction cost of negotiating individual disputes from scratch.
+          </p>
+        </div>
+
+        <div className="p-3 bg-zinc-50 rounded-xl border border-zinc-200 space-y-1 text-xs">
+          <div className="font-mono font-bold text-indigo-700">2. Verification Regimes</div>
+          <p className="text-[11px] text-zinc-600 leading-snug">
+            Bodies like the IAEA and WTO provide impartial inspection and reporting, denying states the ability to conceal cheating.
+          </p>
+        </div>
+
+        <div className="p-3 bg-zinc-50 rounded-xl border border-zinc-200 space-y-1 text-xs">
+          <div className="font-mono font-bold text-indigo-700">3. Lengthening Horizons</div>
+          <p className="text-[11px] text-zinc-600 leading-snug">
+            Regular summit meetings and iterated voting cycles ensure leaders know they will face their counterparts tomorrow.
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+

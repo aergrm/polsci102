@@ -24,12 +24,19 @@ import {
   FolderArchive,
   ChevronDown,
   Layers,
-  Sparkles
+  Sparkles,
+  GitFork,
+  Users,
+  Map
 } from 'lucide-react';
 
 import { GlobalGeopoliticalGlobe } from './GlobalGeopoliticalGlobe';
+import { PopulationPyramidVisualizer } from './datasets/PopulationPyramidVisualizer';
+import { ChoroplethMapVisualizer } from './datasets/ChoroplethMapVisualizer';
 
 export type DatasetSubTab =
+  | 'choropleth'
+  | 'demographics'
   | 'globe'
   | 'mid'
   | 'alliances'
@@ -43,10 +50,28 @@ export type DatasetSubTab =
   | 'sipri';
 
 export function IRDataLab() {
-  const [activeSubTab, setActiveSubTab] = useState<DatasetSubTab>('mid');
+  const [activeSubTab, setActiveSubTab] = useState<DatasetSubTab>('choropleth');
   const [showDownloads, setShowDownloads] = useState(false);
 
   const datasetTabs = [
+    {
+      id: 'choropleth',
+      title: 'Geopolitical Choropleth Map (D3.js)',
+      shortTitle: 'Choropleth Map',
+      icon: Map,
+      tag: 'D3 Dynamic',
+      badge: 'GDP & Conflict',
+      color: 'hover:border-emerald-500/50'
+    },
+    {
+      id: 'demographics',
+      title: 'Comparative Population Pyramids (D3.js)',
+      shortTitle: 'Population Pyramids',
+      icon: Users,
+      tag: 'D3 Dynamic',
+      badge: 'Demographic Transition',
+      color: 'hover:border-blue-500/50'
+    },
     {
       id: 'globe',
       title: '3D Geopolitical World Globe (1816–2024)',
@@ -251,6 +276,8 @@ export function IRDataLab() {
 
       {/* Active Dataset Component */}
       <div>
+        {activeSubTab === 'choropleth' && <ChoroplethMapVisualizer />}
+        {activeSubTab === 'demographics' && <PopulationPyramidVisualizer />}
         {activeSubTab === 'globe' && <GlobalGeopoliticalGlobe />}
         {activeSubTab === 'mid' && <MIDExplorer />}
         {activeSubTab === 'alliances' && <AlliancesExplorer />}
